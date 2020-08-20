@@ -13,7 +13,10 @@
   },
   "main": "background.js",
   "dependencies": {
-    "core-js": "^3.6.5",
+    "@nondanee/unblockneteasemusic": "^0.25.3",
+    "NeteaseCloudMusicApi": "https://github.com/ttdyce/NeteaseCloudMusicApi.git",
+    "electron-store": "^6.0.0",
+    "mousetrap": "^1.6.5",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
     "vuetify": "^2.2.11"
