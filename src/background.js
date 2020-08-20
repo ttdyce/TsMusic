@@ -1,5 +1,7 @@
 'use strict'
 
+const Store = require('electron-store')
+import Netease from './api/netease'
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
@@ -9,9 +11,13 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+// Netease music related
+const store = new Store()
+const netease = new Netease(store.get('cookie')) // being set before getting
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
+  { scheme: 'app', privileges: { secure: false, standard: true } },
 ])
 
 function createWindow() {
@@ -22,8 +28,9 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
-    }
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      enableRemoteModule: true, // for me and electron-store
+    },
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -38,6 +45,12 @@ function createWindow() {
 
   win.on('closed', () => {
     win = null
+  })
+
+  win.webContents.on('did-finish-load', () => {
+    netease.getUserPlaylist().then((lists) => {
+      win.webContents.send('playlistsLoaded', lists[0].concat(lists[1]))
+    })
   })
 }
 
@@ -88,3 +101,4 @@ if (isDevelopment) {
   }
 }
 
+global.netease = netease
