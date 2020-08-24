@@ -1,214 +1,142 @@
 <template>
-  <v-container
-    fluid
-    style="position:fixed; right:0;bottom:0;left:256px; height: 180px"
-  >
-    <v-row :align="center">
-      <!-- Lefty, Name, singer, etc -->
-      <v-col cols="2">
-        <v-sheet :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`">
-          <v-card>
-            <v-skeleton-loader
-              max-height="12vh"
-              type="image"
-            ></v-skeleton-loader>
-          </v-card>
-        </v-sheet>
-
-        <!-- <img
-            id="control-thumbnail"
-            alt="Song thumbnail"
-            class="img-thumbnail rounded"
-            :src="songPlaying.picUrl"
-          /> -->
-      </v-col>
-
-      <v-col cols="4" class="text-left">
-        <v-row>
-          <v-col cols="12">
-            <h6 class="text-truncate">
-              <span id="control-name">{{ songPlaying.name }}</span>
-              <span
-                id="control-alia"
-                class="text-muted"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="Tooltip on left"
-                >{{
-                  songPlaying.alia === 'undefined' ? '' : songPlaying.alia
-                }}</span
+  <div style="position:fixed; right:0;bottom:0;left:256px; height: 180px">
+    
+  <v-progress-linear rounded indeterminate v-if="isLoading"></v-progress-linear>
+    <v-container fluid>
+      <v-row>
+        <!-- Lefty, thumbnail -->
+        <v-col cols="2">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <v-sheet
+                :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
               >
-            </h6>
-          </v-col>
-
-          <v-col cols="12" class="">
-            <h6>
-              <small id="control-singer" class="text-muted">{{
-                songPlaying.arName
-              }}</small>
-            </h6>
-          </v-col>
-
-          <v-col cols="12">
-            <h6>
-              <small id="control-album" class="text-muted">{{
-                songPlaying.alName
-              }}</small>
-            </h6>
-          </v-col>
-        </v-row>
-      </v-col>
-      <!-- Rightly, Play/Pause, etc... -->
-      <v-col cols="6">
-        <div>
-          <audio
-            ref="audio"
-            id="audio"
-            type="audio/mpeg"
-            @timeupdate="ontimeupdate()"
-            @loadstart="onloadstart()"
-            @canplay="oncanplay()"
-            @play="onplay()"
-            @pause="onpause()"
-            @ended="playNextTrack()"
-            autoplay
-          ></audio>
-        </div>
-        <div class="col-12">
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="playLastTrack()"
-          >
-            <em class="fas fa-backward"></em>
-          </button>
-          <button
-            id="control-play"
-            type="button"
-            class="btn btn-primary"
-            v-on:click="toggleAudio()"
-          >
-            <div
-              v-if="isLoading"
-              id="control-spinner"
-              class="spinner-border"
-              role="status"
-            >
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div v-else>
-              <em v-if="!isPlaying" class="fas fa-play"></em>
-              <em v-if="isPlaying" class="fas fa-pause"></em>
-            </div>
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="playNextTrack()"
-          >
-            <em class="fas fa-forward"></em>
-          </button>
-        </div>
-
-        <!-- Progress bar's -->
-        <v-row class="my-3">
-          <v-col cols="1" id="control-currentTime">
-            <span>{{ currentTime }}</span>
-          </v-col>
-          <v-col cols="10">
-            <input
-              ref="bar"
-              id="control-bar"
-              type="range"
-              class="form-control-range"
-              step="0.1"
-              value="0"
-              @mousedown="mousedown = true"
-              @mouseup="
-                mousedown = false
-                updateAudioTime()
-              "
-            />
-          </v-col>
-          <v-col cols="1" id="control-maxTime">{{ maxTime }}</v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="2" class="align-items-end">
-        <v-row class="">
-          <v-col cols="12" class="mt-3">
-            <input
-              ref="volumeChild"
-              id="control-volumeChild"
-              class="form-control-range"
-              type="range"
-              v-model="volumeChild"
-              @mouseup="saveVolume('volumeChild')"
-              @input="updateVolume"
-            />
-          </v-col>
-          <div class="col-12 mt-3">
-            <input
-              ref="volumeMaster"
-              id="control-volumeMaster"
-              class="form-control-range"
-              type="range"
-              v-model="volumeMaster"
-              @mouseup="saveVolume('volumeMaster')"
-              @input="updateVolume"
-            />
-          </div>
-        </v-row>
-      </v-col>
-      <v-col cols="1">
-        <v-row class="">
-          <v-col cols="12" class="mt-1">
-            <button id="control-playlist" type="button" class="btn btn-primary">
-              <em class="fas fa-stream"></em>
-            </button>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+                <v-card>
+                  <v-skeleton-loader
+                    max-height="12vh"
+                    type="image"
+                  ></v-skeleton-loader>
+                </v-card>
+              </v-sheet>
+            </v-col>
+          </v-row>
+        </v-col>
+        <!-- Middle, 3 parts vertically: play/pause, progress, song details -->
+        <v-col cols="7">
+          <v-row no-gutters>
+            <!-- audio player -->
+            <audio
+              ref="audio"
+              type="audio/mpeg"
+              @timeupdate="ontimeupdate()"
+              @loadstart="onloadstart()"
+              @canplay="oncanplay()"
+              @play="onplay()"
+              @pause="onpause()"
+              @ended="playNextTrack()"
+              autoplay
+            ></audio>
+            <!-- play/pause thing -->
+            <v-col cols="12" class="text-center">
+              <v-btn icon large @click="playLastTrack()">
+                <v-icon>mdi-skip-previous</v-icon>
+              </v-btn>
+              <v-btn icon large @click="playPause()">
+                <v-icon v-if="!isPlaying">mdi-play</v-icon>
+                <v-icon v-else>mdi-pause</v-icon>
+              </v-btn>
+              <v-btn icon large @click="playNextTrack()">
+                <v-icon>mdi-skip-next</v-icon>
+              </v-btn>
+            </v-col>
+            <!-- progress -->
+            <v-col cols="12">
+              <v-slider v-model="progress" min="0" max="100" :thumb-size="36">
+                <template v-slot:thumb-label="{ value }">
+                  {{ toMinuteString((value / 100) * maxTime) }}
+                </template>
+              </v-slider>
+            </v-col>
+            <!-- song details -->
+            <v-col cols="8" v-if="isSongLoaded">
+              <span class="font-weight-light"
+                >{{
+                  songPlaying.ar[0].name != 'undefined'
+                    ? songPlaying.ar[0].name
+                    : ''
+                }}
+                |
+              </span>
+              {{ songPlaying.name }}
+            </v-col>
+          </v-row>
+        </v-col>
+        <!-- Rightly, volumns and playlist-selector -->
+        <v-col cols="3">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <v-slider v-model="volumn1" min="0" max="100" label="volumn1">
+              </v-slider>
+            </v-col>
+            <v-col cols="12" class="text-right">
+              <v-btn icon large>
+                <v-icon>mdi-shuffle</v-icon>
+              </v-btn>
+              <v-btn icon large >
+                <v-icon>mdi-playlist-music</v-icon>
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
+              <v-slider v-model="volumn2" min="0" max="100" label="volumn2">
+              </v-slider>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
 export default {
-  props: ['songPlaying'],
-  inject: [
-    'playAudio',
-    'saveVolume',
-    'playNextTrack',
-    'playLastTrack',
-    'theme',
-  ],
+  inject: ['theme'],
   data() {
     return {
-      currentTime: '',
-      maxTime: '',
-      isLoading: false,
+      nameLoaded: false,
+      progress: 0,
+      currentTime: 0,
+      maxTime: 180, // todo for debug
       isPlaying: false,
+      isLoading: true, // todo for debug
       mousedown: false,
       volumeChild: 100,
       volumeMaster: 100,
     }
   },
+  computed: {
+    audio: function() {
+      return this.$refs.audio
+    },
+    songPlaying: function() {
+      return this.$store.state.songPlaying
+    },
+    isSongLoaded: function() {
+      return JSON.stringify(this.songPlaying) != '{}'
+    },
+    maxTimeInString: function() {
+      return JSON.stringify(this.songPlaying) != '{}'
+    },
+  },
   methods: {
-    setVolumes(volumeMasterSaved, volumeChildSaved) {
-      this.volumeMaster = volumeMasterSaved
-      this.volumeChild = volumeChildSaved
-      this.updateVolume()
-    },
+    toMinuteString(time) {
+      const mins = parseInt(time / 60),
+        seconds = parseInt(time % 60)
 
-    updateVolume() {
-      // value: 0 ~ 100
-      const volumeToSet = (this.volumeMaster * this.volumeChild) / 100 / 100
+      return `${mins.toString().padStart(2, '0')}:
+      ${seconds.toString().padStart(2, '0')}`
+    },
+    // audio's stuff
 
-      this.$refs.audio.volume = volumeToSet
-    },
-    toggleAudio() {
-      this.playAudio(this.$refs.audio)
-    },
     ontimeupdate() {
       if (this.mousedown) return false
 
@@ -255,10 +183,17 @@ export default {
       // $audio.animate({ volume: 0 }, 1000);
     },
     updateAudioTime() {
-      const value = this.$refs['bar'].value
       // value: 0.0 ~ 100.0
-      const timeToSet = (value / 100) * this.$refs.audio.duration
-      this.$refs.audio.currentTime = timeToSet
+      // const timeToSet = (this.progress / 100) * this.$refs.audio.duration
+      // audio.currentTime = timeToSet
+    },
+    playPause() {
+      const isPaused = this.audio.paused
+      if (isPaused) {
+        this.audio.play()
+      } else {
+        this.audio.pause()
+      }
     },
   },
 }

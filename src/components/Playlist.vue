@@ -33,7 +33,7 @@
         </thead>
         <tbody>
           <tr v-for="song in songs" :key="song.id" :v-bind="song">
-            <td>{{ song.name }}</td>
+            <td @dblclick="playSong(song)">{{ song.name }}</td>
           </tr>
         </tbody>
       </template>
@@ -73,6 +73,12 @@ export default {
         this.songs = songs
         console.log(this.songs)
       })
+    },
+    playSong(song) {
+      // start fetching
+      console.log('set store.song');
+      console.log(song.id);
+      this.$store.commit('setSongPlaying', song)
     },
   },
   inject: ['theme', 'netease'],

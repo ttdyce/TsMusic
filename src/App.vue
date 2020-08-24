@@ -67,16 +67,16 @@
       </v-container>
     </v-main>
 
-    <!-- <Player songPlaying="{}"></Player> -->
+    <Player></Player>
   </v-app>
 </template>
 
 <script>
-// import Player from "./components/Player";
+import Player from "./components/Player";
 export default {
   props: ['playlists'],
   components: {
-    // Player,
+    Player,
   },
   methods: {
     goBack() {
