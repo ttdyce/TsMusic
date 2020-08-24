@@ -23,10 +23,14 @@ const router = new VueRouter({
 const store = new Vuex.Store({
   state: {
     songPlaying: {},
+    songDetails: {},
   },
   mutations: {
-    setSongPlaying(state, newSong) {
-      state.songPlaying = newSong
+    setSongPlaying(state, song) {
+      state.songPlaying = song
+    },
+    setSongDetails(state, songDetails) {
+      state.songDetails = songDetails
     },
   },
 })

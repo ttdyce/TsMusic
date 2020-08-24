@@ -3,8 +3,8 @@ const {
   user_playlist,
   playlist_detail,
   song_detail,
-  //   song_url,
-  //   check_music,
+    song_url,
+    check_music,
 } = require('NeteaseCloudMusicApi')
 // require("@nondanee/unblockneteasemusic");
 
@@ -81,5 +81,39 @@ export default class netease {
 
     // Load songs from playlist
     return playlistLoaded.songs
+  }
+
+  // try play netease's one, else play unblockneteasemusic's one
+  async fetchSong(id) {
+    let url, song
+    try {
+      const state = await check_music({
+        id: id,
+      })
+      //todo state.body.success may never get false here
+      console.log(`Song state: ${state.body}`)
+      if (!state.body.success) throw new Error('netease cannot play')
+
+      song = await song_url({
+        id: id,
+      })
+      console.log(song)
+      url = song.body.data[0].url
+
+      if (url == null)
+        // only providing demo version
+        throw new Error('null url from netease api (demo version only?)')
+    } catch (error) {
+      console.log('Catched an error!')
+      console.log(error)
+      // const song = await match(id, ['kuwo', 'qq', 'youtube'])
+      // console.log(song)
+      // url = song.url
+    } finally {
+      console.log(`song's url = ${url}`)
+      
+    }
+
+    return song
   }
 }

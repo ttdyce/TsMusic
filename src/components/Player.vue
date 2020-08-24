@@ -34,6 +34,7 @@
               @play="onplay()"
               @pause="onpause()"
               @ended="playNextTrack()"
+              :src="songPlaying.url"
               autoplay
             ></audio>
             <!-- play/pause thing -->
@@ -58,16 +59,16 @@
               </v-slider>
             </v-col>
             <!-- song details -->
-            <v-col cols="8" v-if="isSongLoaded">
+            <v-col cols="8" v-if="isSongDetailsLoaded">
               <span class="font-weight-light"
                 >{{
-                  songPlaying.ar[0].name != 'undefined'
-                    ? songPlaying.ar[0].name
+                  songDetails.ar[0].name != 'undefined'
+                    ? songDetails.ar[0].name
                     : ''
                 }}
                 |
               </span>
-              {{ songPlaying.name }}
+              {{ songDetails.name }}
             </v-col>
           </v-row>
         </v-col>
@@ -120,8 +121,11 @@ export default {
     songPlaying: function() {
       return this.$store.state.songPlaying
     },
-    isSongLoaded: function() {
-      return JSON.stringify(this.songPlaying) != '{}'
+    songDetails: function() {
+      return this.$store.state.songDetails
+    },
+    isSongDetailsLoaded: function() {
+      return JSON.stringify(this.songDetails) != '{}'
     },
     maxTimeInString: function() {
       return JSON.stringify(this.songPlaying) != '{}'

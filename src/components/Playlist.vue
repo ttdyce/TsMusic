@@ -78,7 +78,17 @@ export default {
       // start fetching
       console.log('set store.song');
       console.log(song.id);
-      this.$store.commit('setSongPlaying', song)
+      this.$store.commit('setSongDetails', song)
+      
+      this.netease.fetchSong(song.id).then((songFetched) => {
+        // fetched! 
+        // this.loading = false
+        // this.error = false
+        // this.songs = songs
+        console.log(`song url: ${songFetched.body.data[0].url}`)
+        this.$store.commit('setSongPlaying', songFetched.body.data[0])
+        console.log(this.$store.state.songPlaying);
+      })
     },
   },
   inject: ['theme', 'netease'],
