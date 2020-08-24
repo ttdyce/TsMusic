@@ -75,16 +75,13 @@ export default {
       })
     },
     playSong(song) {
-      // start fetching
       console.log('set store.song');
       console.log(song.id);
       this.$store.commit('setSongDetails', song)
       
+      // start fetching
       this.netease.fetchSong(song.id).then((songFetched) => {
         // fetched! 
-        // this.loading = false
-        // this.error = false
-        // this.songs = songs
         console.log(`song url: ${songFetched.body.data[0].url}`)
         this.$store.commit('setSongPlaying', songFetched.body.data[0])
         console.log(this.$store.state.songPlaying);

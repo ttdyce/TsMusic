@@ -1,7 +1,10 @@
 <template>
   <div style="position:fixed; right:0;bottom:0;left:256px; height: 180px">
-    
-  <v-progress-linear rounded indeterminate v-if="isLoading"></v-progress-linear>
+    <v-progress-linear
+      rounded
+      indeterminate
+      v-if="isLoading"
+    ></v-progress-linear>
     <v-container fluid>
       <v-row>
         <!-- Lefty, thumbnail -->
@@ -52,7 +55,13 @@
             </v-col>
             <!-- progress -->
             <v-col cols="12">
-              <v-slider v-model="progress" min="0" max="100" :thumb-size="36">
+              <v-slider
+                ref="progressBar"
+                v-model="progress"
+                min="0"
+                max="100"
+                :thumb-size="36"
+              >
                 <template v-slot:thumb-label="{ value }">
                   {{ toMinuteString((value / 100) * maxTime) }}
                 </template>
@@ -83,7 +92,7 @@
               <v-btn icon large>
                 <v-icon>mdi-shuffle</v-icon>
               </v-btn>
-              <v-btn icon large >
+              <v-btn icon large>
                 <v-icon>mdi-playlist-music</v-icon>
               </v-btn>
             </v-col>
@@ -118,6 +127,9 @@ export default {
     audio: function() {
       return this.$refs.audio
     },
+    progressBar: function() {
+      return this.$refs.progressBar
+    },
     songPlaying: function() {
       return this.$store.state.songPlaying
     },
@@ -142,18 +154,16 @@ export default {
     // audio's stuff
 
     ontimeupdate() {
-      if (this.mousedown) return false
+      // if (this.mousedown) return false
 
       // update control-bar and control-currentTime
-      const audioElement = this.$refs.audio,
-        barElement = this.$refs.bar
+      const audioElement = this.audio,
+        barElement = this.progressBar
       const currentTime = audioElement.currentTime,
         maxTime = audioElement.duration,
         currentPercent = (currentTime / maxTime) * 100
 
-      if (barElement.dataset.mousedown != 'true') {
-        barElement.value = currentPercent
-      }
+      barElement.value = currentPercent
 
       const mins = parseInt(currentTime / 60),
         seconds = parseInt(currentTime % 60)
