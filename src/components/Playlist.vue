@@ -66,12 +66,20 @@ export default {
       this.error = this.songs = null
       const fetchedId = this.id
 
-      this.netease.fetchPlaylist(fetchedId).then((songs) => {
+      this.netease.fetchPlaylist(fetchedId)
+      .then((playlistDetails) => {
+        console.log('playlistDetails')
+        console.log(playlistDetails)
+        return this.netease.fetchSongs(playlistDetails)
+      })
+      .then((songs) => {
         // fetched! 
         this.loading = false
         this.error = false
         this.songs = songs
-        console.log(this.songs)
+        console.log('songs')
+        console.log(songs)
+
       })
     },
     playSong(song) {

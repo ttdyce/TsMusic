@@ -3,8 +3,8 @@ const {
   user_playlist,
   playlist_detail,
   song_detail,
-    song_url,
-    check_music,
+  song_url,
+  check_music,
 } = require('NeteaseCloudMusicApi')
 // require("@nondanee/unblockneteasemusic");
 
@@ -59,28 +59,35 @@ export default class netease {
       id: lid,
       cookie: this.cookie,
     })
-    let playlistLoaded = []
-
+    console.log('loaded a playlist')
     console.log(playlistDetails)
     console.log(
       `Printing first song id: ${playlistDetails.body.privileges[0].id}`
     )
+    return playlistDetails.body
+  }
+
+  async fetchSongs(playlistDetails) {
     // Get all song id as array
     const songids = []
-    playlistDetails.body.privileges.forEach((x) => {
+    playlistDetails.privileges.forEach((x) => {
       songids.push(x.id)
     })
     console.log(songids)
     // Get all song details by ids
-    playlistLoaded = await song_detail({
+    let songsLoaded = await song_detail({
       ids: songids.toString(),
       cookie: this.cookie,
     })
-    playlistLoaded = playlistLoaded.body
-    console.log(playlistLoaded)
-
+    songsLoaded = songsLoaded.body
     // Load songs from playlist
-    return playlistLoaded.songs
+    console.log(songsLoaded)
+    return songsLoaded.songs
+  }
+
+  async fetchPlaylistSongs(lid) {
+    const playlistDetails = await this.fetchPlaylist(lid)
+    return await this.fetchSongs(playlistDetails)
   }
 
   // try play netease's one, else play unblockneteasemusic's one
@@ -111,7 +118,6 @@ export default class netease {
       // url = song.url
     } finally {
       console.log(`song's url = ${url}`)
-      
     }
 
     return song
