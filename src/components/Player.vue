@@ -61,6 +61,8 @@
                 min="0"
                 max="100"
                 :thumb-size="36"
+                @mousedown="mousedown = true"
+                @mouseup="mousedown = false; updateAudioTime()"
               >
                 <template v-slot:thumb-label="{ value }">
                   {{ toMinuteString((value / 100) * maxTime) }}
@@ -154,16 +156,15 @@ export default {
     // audio's stuff
 
     ontimeupdate() {
-      // if (this.mousedown) return false
+      if (this.mousedown) return false
 
       // update control-bar and control-currentTime
-      const audioElement = this.audio,
-        barElement = this.progressBar
+      const audioElement = this.audio
       const currentTime = audioElement.currentTime,
         maxTime = audioElement.duration,
         currentPercent = (currentTime / maxTime) * 100
 
-      barElement.value = currentPercent
+      this.progress = currentPercent
 
       const mins = parseInt(currentTime / 60),
         seconds = parseInt(currentTime % 60)
@@ -173,7 +174,7 @@ export default {
         .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
     },
     onloadstart() {
-      this.$refs.bar.value = 0
+      this.progress = 0
     },
     oncanplay() {
       // view.showSongDetails();
@@ -198,8 +199,8 @@ export default {
     },
     updateAudioTime() {
       // value: 0.0 ~ 100.0
-      // const timeToSet = (this.progress / 100) * this.$refs.audio.duration
-      // audio.currentTime = timeToSet
+      const timeToSet = (this.progress / 100) * this.audio.duration
+      this.audio.currentTime = timeToSet
     },
     playPause() {
       const isPaused = this.audio.paused
