@@ -5,6 +5,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import Home from './components/Home'
 import Playlist from './components/Playlist'
+import Songs from './model/Songs'
 // var Mousetrap = require("mousetrap");
 const { remote, ipcRenderer } = require('electron')
 
@@ -20,10 +21,23 @@ const routes = [
 const router = new VueRouter({
   routes, // short for `routes: routes`
 })
+const netease = remote.getGlobal('netease')
+const electronStore = remote.getGlobal('electronStore')
+var app = App
+const volumeSaved = electronStore.get('volumeSaved', [100, 100])
+console.log(volumeSaved)
+
 const store = new Vuex.Store({
   state: {
     songPlaying: {},
     songDetails: {},
+    volumeSaved: volumeSaved,
+    playlist: {
+      original: {},
+      playing: {},
+      loaded: {},
+      playMode: 'default',
+    },
   },
   mutations: {
     setSongPlaying(state, song) {
@@ -32,10 +46,35 @@ const store = new Vuex.Store({
     setSongDetails(state, songDetails) {
       state.songDetails = songDetails
     },
+    saveVolumes(state, newVolume) {
+      electronStore.set('volumeSaved', newVolume)
+      console.log(electronStore.get('volumeSaved', [100, 100]))
+      state.volumeSaved = newVolume
+    },
+    setSongsLoaded(state, songs) {
+      state.playlist.loaded.songs = new Songs(songs)
+    },
+    setSongsPlaying(state, songs) {
+      // state.playlist.playing.songs = songs
+      state.playlist.playing.songs = new Songs(songs)
+      console.log('Song linked list stored: ')
+      console.log(state.playlist.playing.songs)
+    },
+    setSongsOriginal(state, songs) {
+      state.playlist.original.songs = songs
+    },
+    nextTrack(state) {
+      state.playlist.playing.songs.curr = state.playlist.playing.songs.curr.next
+      console.log('changed curr to next');
+      console.log(state.playlist.playing.songs.curr);
+    },
+  },
+  getters: {
+    currTrack: (state) => {
+      return state.playlist.playing.songs.curr
+    },
   },
 })
-var app = App
-const netease = remote.getGlobal('netease')
 
 ipcRenderer.on('playlistsLoaded', (event, lists) => {
   // const vm =

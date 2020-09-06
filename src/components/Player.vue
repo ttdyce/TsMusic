@@ -83,11 +83,13 @@
             </v-col>
           </v-row>
         </v-col>
-        <!-- Rightly, volumns and playlist-selector -->
+        <!-- Rightly, volumes and playlist-selector -->
         <v-col cols="3">
           <v-row no-gutters>
             <v-col cols="12">
-              <v-slider v-model="volumn1" min="0" max="100" label="volumn1">
+              <v-slider v-model="volume1" min="0" max="100" label="volume1"
+                @mouseup="saveVolumes()"
+                @input="updateVolumes">
               </v-slider>
             </v-col>
             <v-col cols="12" class="text-right">
@@ -99,7 +101,9 @@
               </v-btn>
             </v-col>
             <v-col cols="12">
-              <v-slider v-model="volumn2" min="0" max="100" label="volumn2">
+              <v-slider v-model="volume2" min="0" max="100" label="volume2"
+                @mouseup="saveVolumes()"
+                @input="updateVolumes">
               </v-slider>
             </v-col>
           </v-row>
@@ -111,7 +115,7 @@
 
 <script>
 export default {
-  inject: ['theme'],
+  inject: ['theme', 'netease'],
   data() {
     return {
       nameLoaded: false,
@@ -121,8 +125,8 @@ export default {
       isPlaying: false,
       isLoading: true, // todo for debug
       mousedown: false,
-      volumeChild: 100,
-      volumeMaster: 100,
+      volume1: 100,
+      volume2: 100,
     }
   },
   computed: {
@@ -154,6 +158,20 @@ export default {
       ${seconds.toString().padStart(2, '0')}`
     },
     // audio's stuff
+    setVolumes(volumeSaved) {
+      this.volume1 = volumeSaved[0];
+      this.volume2 = volumeSaved[1];
+      this.updateVolumes();
+    },
+    updateVolumes() {
+      // value: 0 ~ 100
+      const volumeToSet = (this.volume1 * this.volume2) / 100 / 100;
+
+      this.audio.volume = volumeToSet;
+    },
+    saveVolumes(){
+      this.$store.commit('saveVolumes', [this.volume1, this.volume2])
+    }, 
 
     ontimeupdate() {
       if (this.mousedown) return false
@@ -173,12 +191,12 @@ export default {
         .toString()
         .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
     },
+    
     onloadstart() {
+      this.isLoading = true;
       this.progress = 0
     },
     oncanplay() {
-      // view.showSongDetails();
-      // view.showLoadingSong(false);
       this.isLoading = false
 
       // convert & set maxTime
@@ -199,6 +217,8 @@ export default {
     },
     updateAudioTime() {
       // value: 0.0 ~ 100.0
+      this.isLoading = true;
+
       const timeToSet = (this.progress / 100) * this.audio.duration
       this.audio.currentTime = timeToSet
     },
@@ -210,6 +230,38 @@ export default {
         this.audio.pause()
       }
     },
+    playNextTrack() {
+      this.$store.commit('nextTrack')
+      console.log('this.$store.state.playlist.playing.songs.curr: ');
+      console.log(this.$store.state.playlist.playing.songs.curr);
+      
+      this.playSong()
+    },
+    playSong() {
+      console.log('playSong curr track: ');
+      console.log(this.$store.state.playlist.playing.songs.curr);
+      const song = this.$store.state.playlist.playing.songs.curr.song
+
+      console.log('currTrack from getters: ')
+      console.log(song)
+      console.log(song.id)
+      this.$store.commit('setSongDetails', song)
+
+      // start fetching
+      this.netease.fetchSong(song.id).then((songFetched) => {
+        // fetched!
+        console.log(`song url: ${songFetched.body.data[0].url}`)
+        this.$store.commit('setSongPlaying', songFetched.body.data[0])
+        console.log(this.$store.state.songPlaying)
+      })
+    }
   },
+  created(){
+    this.volume1 = this.$store.state.volumeSaved[0]
+    this.volume2 = this.$store.state.volumeSaved[1]
+
+    console.log(`v1: ${this.volume1}`);
+    console.log(`v2: ${this.volume2}`);
+  }, 
 }
 </script>

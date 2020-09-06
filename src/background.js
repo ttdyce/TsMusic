@@ -102,3 +102,4 @@ if (isDevelopment) {
 }
 
 global.netease = netease
+global.electronStore = store

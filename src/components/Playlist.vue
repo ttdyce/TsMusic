@@ -14,10 +14,16 @@
         </v-col>
         <v-col sm="6">
           <v-row no-gutters>
-            <v-col> Playlist name </v-col>
+            <v-col>
+              {{ playlistDetails.playlist.name }}
+              ({{ playlistDetails.playlist.trackCount }})
+            </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col> Playlistid {{ id }} </v-col>
+            <v-col> Created by {{ playlistDetails.playlist.creator.nickname }} </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col> <v-btn @click="isLoading=true; setPlaylist(songs); playSong()">Play all</v-btn> </v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -33,12 +39,11 @@
         </thead>
         <tbody>
           <tr v-for="song in songs" :key="song.id" :v-bind="song">
-            <td @dblclick="playSong(song)">{{ song.name }}</td>
+            <td @dblclick="isLoading=true; playSong()">{{ song.name }}</td>
           </tr>
         </tbody>
       </template>
     </v-simple-table>
-
   </div>
 </template>
 
@@ -50,6 +55,7 @@ export default {
       isLoading: false,
       isError: null,
       songs: null,
+      playlistDetails: {},
     }
   },
   created() {
@@ -62,39 +68,48 @@ export default {
   methods: {
     fetchData() {
       // start fetching
-      this.loading = true
+      this.isLoading = true
       this.error = this.songs = null
       const fetchedId = this.id
 
-      this.netease.fetchPlaylist(fetchedId)
-      .then((playlistDetails) => {
-        console.log('playlistDetails')
-        console.log(playlistDetails)
-        return this.netease.fetchSongs(playlistDetails)
-      })
-      .then((songs) => {
-        // fetched! 
-        this.loading = false
-        this.error = false
-        this.songs = songs
-        console.log('songs')
-        console.log(songs)
+      this.netease
+        .fetchPlaylist(fetchedId)
+        .then((playlistDetails) => {
+          console.log('playlistDetails')
+          console.log(playlistDetails)
+          this.playlistDetails = playlistDetails
+          return this.netease.fetchSongs(playlistDetails)
+        })
+        .then((songs) => {
+          // fetched!
+          this.isLoading = false
+          this.error = false
+          this.songs = songs
+          console.log('songs')
+          console.log(songs)
 
-      })
+          this.$store.commit('setSongsLoaded', songs)
+        })
     },
-    playSong(song) {
-      console.log('set store.song');
-      console.log(song.id);
+    playSong() {
+      const song = this.$store.state.playlist.playing.songs.curr.song
+
+      console.log('currTrack from getters: ')
+      console.log(song)
+      console.log(song.id)
       this.$store.commit('setSongDetails', song)
-      
+
       // start fetching
       this.netease.fetchSong(song.id).then((songFetched) => {
-        // fetched! 
+        // fetched!
         console.log(`song url: ${songFetched.body.data[0].url}`)
         this.$store.commit('setSongPlaying', songFetched.body.data[0])
-        console.log(this.$store.state.songPlaying);
+        console.log(this.$store.state.songPlaying)
       })
     },
+    setPlaylist(incomingSongs) {
+      this.$store.commit('setSongsPlaying', incomingSongs)
+    }
   },
   inject: ['theme', 'netease'],
 }
