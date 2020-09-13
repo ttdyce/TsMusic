@@ -1,4 +1,4 @@
-export default class Songs {
+class Songs {
   constructor(songsList) {
     let curr
     let next
@@ -12,14 +12,33 @@ export default class Songs {
         curr = next
         next = new SongsNode(nextSong)
       }
-      
+
       curr.next = next
 
       if (index == 0) {
-        this.head = curr
-        this.curr = this.head
+        this.curr = curr
+        this.head = this.curr
       }
     }
+  }
+
+  setExistingCurr(song) {
+    let cursor = this.head
+    do {
+      if (cursor.song.id == song.id) {
+        this.curr = cursor
+        return true
+      }
+
+      cursor = cursor.next
+    } while (cursor.hasNext())
+
+    return false
+  }
+
+  replaceCurr(newNode) {
+    newNode.next = this.curr
+    this.curr = newNode
   }
 }
 
@@ -28,4 +47,15 @@ class SongsNode {
     this.song = song
     this.next = null
   }
+
+  hasNext() {
+    return this.next != null
+  }
+
+  appendNext(newNext){
+    newNext.next = this.next
+    this.next = newNext
+  }
 }
+
+export { Songs, SongsNode }

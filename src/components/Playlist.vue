@@ -13,13 +13,13 @@
           </v-sheet>
         </v-col>
         <v-col sm="6">
-          <v-row no-gutters>
+          <v-row no-gutters v-if="isLoaded">
             <v-col>
               {{ playlistDetails.playlist.name }}
               ({{ playlistDetails.playlist.trackCount }})
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row no-gutters v-if="isLoaded">
             <v-col> Created by {{ playlistDetails.playlist.creator.nickname }} </v-col>
           </v-row>
           <v-row no-gutters>
@@ -39,7 +39,7 @@
         </thead>
         <tbody>
           <tr v-for="song in songs" :key="song.id" :v-bind="song">
-            <td @dblclick="isLoading=true; playSong()">{{ song.name }}</td>
+            <td @dblclick="isLoading=true; setPlaylistIfEmpty(songs); setTrackByid(song); playSong()">{{ song.name }}</td>
           </tr>
         </tbody>
       </template>
@@ -65,6 +65,11 @@ export default {
     // call again the method if the route changes
     $route: 'fetchData',
   },
+  computed:{
+    isLoaded(){
+      return JSON.stringify(this.playlistDetails) !== JSON.stringify({});
+    }
+  }, 
   methods: {
     fetchData() {
       // start fetching
@@ -97,19 +102,38 @@ export default {
       console.log('currTrack from getters: ')
       console.log(song)
       console.log(song.id)
-      this.$store.commit('setSongDetails', song)
+      this.$store.commit('setSongDetail', song)
 
       // start fetching
       this.netease.fetchSong(song.id).then((songFetched) => {
         // fetched!
         console.log(`song url: ${songFetched.body.data[0].url}`)
-        this.$store.commit('setSongPlaying', songFetched.body.data[0])
+        this.$store.commit('setSongPlayingUrl', {songUrl: songFetched.body.data[0]})
         console.log(this.$store.state.songPlaying)
       })
     },
     setPlaylist(incomingSongs) {
       this.$store.commit('setSongsPlaying', incomingSongs)
-    }
+    }, 
+    setPlaylistIfEmpty(incomingSongs) {
+      if(this.$store.getters.isPlayingPlaylistEmpty)
+        this.$store.commit('setSongsPlaying', incomingSongs)
+    }, 
+    setTrackByid(song) {
+      console.log('this.$store.state.playlist.playing.songs.setExistingCurr(song)')
+      console.log(this.$store.state.playlist.playing.songs.setExistingCurr(song))
+      console.log(song)
+      console.log(song.id)
+      this.$store.commit('setSongDetail', song)
+
+      // start fetching
+      // this.netease.fetchSong(song.id).then((songFetched) => {
+      //   // fetched!
+      //   console.log(`song url: ${songFetched.body.data[0].url}`)
+      //   this.$store.commit('setSongPlayingUrl', {song: songFetched.body.data[0]})
+      //   console.log(this.$store.state.songPlaying)
+      // })
+    },
   },
   inject: ['theme', 'netease'],
 }
