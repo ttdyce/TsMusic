@@ -134,7 +134,7 @@ export default {
       nameLoaded: false,
       progress: 0,
       currentTime: 0,
-      maxTime: 180, // todo for debug
+      maxTime: 0, // todo for debug
       isPlaying: false,
       isLoading: true, // todo for debug
       mousedown: false,
@@ -186,6 +186,8 @@ export default {
       this.volume1 = volumeSaved[0]
       this.volume2 = volumeSaved[1]
       this.updateVolumes()
+      console.log(`v1: ${this.volume1}`)
+      console.log(`v2: ${this.volume2}`)
     },
     updateVolumes() {
       // value: 0 ~ 100
@@ -224,12 +226,8 @@ export default {
       this.isLoading = false
 
       // convert & set maxTime
-      const duration = this.$refs.audio.duration
-      const mins = parseInt(duration / 60),
-        seconds = parseInt(duration % 60)
-      this.maxTime = `${mins
-        .toString()
-        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      const duration = this.audio.duration
+      this.maxTime = duration
     },
     onplay() {
       this.isPlaying = true
@@ -286,6 +284,9 @@ export default {
       // start fetching
       this.netease.fetchSong(songToPlay.id).then((songFetched) => {
         // fetched!
+        if(songFetched == undefined){
+          console.log('handle songFetched == undefined here! ')
+        }
         console.log(`song url: ${songFetched.body.data[0].url}`)
         this.$store.commit('setSongPlayingUrl', {
           songUrl: songFetched.body.data[0],
@@ -299,12 +300,10 @@ export default {
       this.$store.commit('setPlayMode', this.isShuffled ? 'random' : 'default')
     },
   },
-  created() {
-    this.volume1 = this.$store.state.volumeSaved[0]
-    this.volume2 = this.$store.state.volumeSaved[1]
-
-    console.log(`v1: ${this.volume1}`)
-    console.log(`v2: ${this.volume2}`)
+  mounted() {
+    const volume1 = this.$store.state.volumeSaved[0]
+    const volume2 = this.$store.state.volumeSaved[1]
+    this.setVolumes([volume1, volume2])
   },
 }
 </script>
