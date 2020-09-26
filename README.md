@@ -1,24 +1,24 @@
 # tsmusic
 
-## Project setup
-```
-yarn install
-```
+This an vuetify-electron application for music playing.  
+It retrieve playlists from Netease Music and play songs with the player implemented in electron.  
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+## Core concept
 
-### Compiles and minifies for production
-```
-yarn build
-```
+- nPlaylist / External playlist (from Netease Music API)
+  - playlist detail
+  - song detail
+  - song url
+- Track System
+  - currently-playing playlist
+    - prev: a computed value from history
+    - curr: SongNode
+    - next: SongNode
+  - play history
+  - dual volume control
+  - play mode
+- Home
+  - recently played playlists
 
-### Lints and fixes files
-```
-yarn lint
-```
+Learn more at the [Technical README](TechnicalREADME.md)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

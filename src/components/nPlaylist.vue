@@ -97,7 +97,7 @@ export default {
         })
     },
     playSong() {
-      const song = this.$store.state.playlist.playing.songs.curr.song
+      const song = this.$store.state.playlist.playing.songList.curr.song
 
       console.log('currTrack from getters: ')
       console.log(song)
@@ -113,15 +113,15 @@ export default {
       })
     },
     setPlaylist(incomingSongs) {
-      this.$store.commit('setSongsPlaying', incomingSongs)
+      this.$store.commit('setSongListPlaying', incomingSongs)
     }, 
     setPlaylistIfEmpty(incomingSongs) {
       if(this.$store.getters.isPlayingPlaylistEmpty)
-        this.$store.commit('setSongsPlaying', incomingSongs)
+        this.$store.commit('setSongListPlaying', incomingSongs)
     }, 
     setTrackByid(song) {
-      console.log('this.$store.state.playlist.playing.songs.setExistingCurr(song)')
-      console.log(this.$store.state.playlist.playing.songs.setExistingCurr(song))
+      console.log('this.$store.state.playlist.playing.songList.setExistingCurr(song)')
+      console.log(this.$store.state.playlist.playing.songList.setExistingCurr(song))
       console.log(song)
       console.log(song.id)
       this.$store.commit('setSongDetail', song)

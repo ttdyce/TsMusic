@@ -4,9 +4,8 @@ import VueRouter from 'vue-router'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import Home from './components/Home'
-import Playlist from './components/Playlist'
-import { Songs, SongsNode } from './model/Songs'
-// import {Songs} from './model/Songs'
+import nPlaylist from './components/nPlaylist'
+import { SongList, SongNode } from './model/SongList'
 // var Mousetrap = require("mousetrap");
 const { remote, ipcRenderer } = require('electron')
 
@@ -17,7 +16,7 @@ Vue.use(Vuex)
 // Define routes
 const routes = [
   { path: '/home', component: Home },
-  { path: '/playlist/:id', component: Playlist, props: true },
+  { path: '/playlist/:id', component: nPlaylist, props: true },
 ]
 const router = new VueRouter({
   routes, // short for `routes: routes`
@@ -34,15 +33,14 @@ const store = new Vuex.Store({
       detail: {},
       url: {},
     },
-    // songDetails: {},
     volumeSaved,
     playlist: {
       original: {
         songs: [],
       },
       playing: {
-        songs: new Songs([]),
-        songsShuffled: new Songs([]),
+        songList: new SongList([]),
+        songListShuffled: new SongList([]),
       },
       history: [],
       loaded: {
@@ -67,35 +65,47 @@ const store = new Vuex.Store({
       state.volumeSaved = newVolume
     },
     setSongsLoaded(state, songs) {
-      state.playlist.loaded.songs = new Songs(songs)
+      state.playlist.loaded.songs = new SongList(songs)
     },
-    setSongsPlaying(state, songs) {
+    setSongListPlaying(state, songs) {
       // clean history
       this.commit('resetHistory')
-      this.commit('addSongsOriginal', songs)
+      this.commit('setSongsOriginal', songs)
 
-      state.playlist.playing.songs = new Songs(songs)
-      state.playlist.playing.songsShuffled = new Songs(songs.shuffle())
+      state.playlist.playing.songList = new SongList(songs)
+      state.playlist.playing.songListShuffled = new SongList(songs.shuffle())
       console.log('Song linked list stored: ')
-      console.log(state.playlist.playing.songs)
+      console.log(state.playlist.playing.songList)
       console.log('shuffled songs: ')
-      console.log(state.playlist.playing.songsShuffled)
+      console.log(state.playlist.playing.songListShuffled)
     },
-    addSongsOriginal(state, songs) {
-      state.playlist.original.songs.push(songs)
+    setSongsOriginal(state, songs) {
+      state.playlist.original.songs = songs
     },
     nextTrack(state) {
       console.log('changed curr to next')
-      console.log(state.playlist.playing.songsShuffled.curr)
+      console.log(state.playlist.playing.songListShuffled.curr)
 
       if (state.playMode == 'default') {
-        state.playlist.playing.songs.curr =
-          state.playlist.playing.songs.curr.next
+        state.playlist.playing.songList.curr =
+          state.playlist.playing.songList.curr.next
         console.log('changed curr to next')
-        console.log(state.playlist.playing.songs.curr)
+        console.log(state.playlist.playing.songList.curr)
       } else if (state.playMode == 'random') {
-        state.playlist.playing.songsShuffled.curr =
-          state.playlist.playing.songsShuffled.curr.next
+        state.playlist.playing.songListShuffled.curr =
+          state.playlist.playing.songListShuffled.curr.next
+
+        if (state.playlist.playing.songListShuffled.curr == null) {
+          // re-shuffle
+          state.playlist.playing.songListShuffled = new SongList(
+            state.playlist.original.songs.shuffle()
+          )
+          console.log(state.playlist.original.songs);
+          console.log('renewed state.playlist.playing.songListShuffled');
+          console.log(state.playlist.playing.songListShuffled);
+          // this.commit('nextTrack')
+
+        }
       }
     },
     lastTrack(state) {
@@ -104,14 +114,14 @@ const store = new Vuex.Store({
       if (song.id == state.songPlaying.detail.id)
         song = state.playlist.history.pop()
 
-      const songNode = new SongsNode(song)
+      const songNode = new SongNode(song)
 
       if (state.playMode == 'default') {
-        songNode.appendNext(state.playlist.playing.songs.curr)
-        state.playlist.playing.songs.curr = songNode
+        songNode.appendNext(state.playlist.playing.songList.curr)
+        state.playlist.playing.songList.curr = songNode
       } else if (state.playMode == 'random') {
-        songNode.appendNext(state.playlist.playing.songsShuffled.curr)
-        state.playlist.playing.songsShuffled.curr = songNode
+        songNode.appendNext(state.playlist.playing.songListShuffled.curr)
+        state.playlist.playing.songListShuffled.curr = songNode
       }
     },
     pushToHistory(state, song) {
@@ -120,7 +130,7 @@ const store = new Vuex.Store({
         state.playlist.history.push(top)
         if (top.id == song.id) return
       }
-      
+
       state.playlist.history.push(song)
       console.log('pushed to history: ')
       console.log(state.playlist.history)
@@ -134,8 +144,18 @@ const store = new Vuex.Store({
     },
   },
   getters: {
-    isPlayingPlaylistEmpty: (state) => {
-      return JSON.stringify(state.playlist.playing) == JSON.stringify({})
+    isPlayingPlaylistEmpty: (state) => () => {
+      console.log('checking isPlayingPlaylistEmpty')
+      console.log(JSON.stringify(state.playlist.playing.songList))
+      console.log(JSON.stringify(new SongList([])))
+      console.log(
+        JSON.stringify(state.playlist.playing.songList) ==
+          JSON.stringify(new SongList([]))
+      )
+      return (
+        JSON.stringify(state.playlist.playing.songList) ==
+        JSON.stringify(new SongList([]))
+      )
     },
   },
 })
@@ -164,7 +184,7 @@ ipcRenderer.on('playlistsLoaded', (event, lists) => {
 })
 
 Array.prototype.shuffle = function() {
-  let arr = this
+  let arr = this.slice()
 
   for (let i = arr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1))

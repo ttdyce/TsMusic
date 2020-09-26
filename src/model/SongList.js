@@ -1,4 +1,4 @@
-class Songs {
+class SongList {
   constructor(songsList) {
     let curr
     let next
@@ -6,11 +6,11 @@ class Songs {
       const song = songsList[index]
       const nextSong = songsList[index + 1]
       if (index == 0) {
-        curr = new SongsNode(song)
-        next = new SongsNode(nextSong)
+        curr = new SongNode(song)
+        next = new SongNode(nextSong)
       } else {
         curr = next
-        next = new SongsNode(nextSong)
+        next = new SongNode(nextSong)
       }
 
       curr.next = next
@@ -42,7 +42,7 @@ class Songs {
   }
 }
 
-class SongsNode {
+class SongNode {
   constructor(song) {
     this.song = song
     this.next = null
@@ -58,4 +58,4 @@ class SongsNode {
   }
 }
 
-export { Songs, SongsNode }
+export { SongList, SongNode }

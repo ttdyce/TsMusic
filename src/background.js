@@ -49,6 +49,8 @@ function createWindow() {
 
   win.webContents.on('did-finish-load', () => {
     netease.getUserPlaylist().then((lists) => {
+      // console.log('netease.getUserPlaylist()');
+      // console.log(lists);
       win.webContents.send('playlistsLoaded', lists[0].concat(lists[1]))
     })
   })

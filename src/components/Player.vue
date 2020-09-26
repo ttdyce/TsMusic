@@ -8,19 +8,29 @@
     <v-container fluid>
       <v-row>
         <!-- Lefty, thumbnail -->
-        <v-col cols="2">
+        <v-col cols="2" class="px-0">
           <v-row no-gutters>
             <v-col cols="12">
-              <v-sheet
-                :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+              <!-- image loaded -->
+              <v-img
+                v-if="isSongDetailLoaded"
+                :src="songDetail.al.picUrl"
+                alt="oops, cannot load album thumbnail! "
               >
-                <v-card>
-                  <v-skeleton-loader
-                    max-height="12vh"
-                    type="image"
-                  ></v-skeleton-loader>
-                </v-card>
-              </v-sheet>
+                <template v-slot:placeholder>
+                  <!-- image loading -->
+                  <v-sheet
+                    :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                  >
+                    <v-card>
+                      <v-skeleton-loader
+                        max-height="12vh"
+                        type="image"
+                      ></v-skeleton-loader>
+                    </v-card>
+                  </v-sheet>
+                </template>
+              </v-img>
             </v-col>
           </v-row>
         </v-col>
@@ -134,9 +144,9 @@ export default {
       nameLoaded: false,
       progress: 0,
       currentTime: 0,
-      maxTime: 0, // todo for debug
+      maxTime: 0,
       isPlaying: false,
-      isLoading: true, // todo for debug
+      isLoading: false,
       mousedown: false,
       volume1: 100,
       volume2: 100,
@@ -265,8 +275,8 @@ export default {
     playSong(fromHistory) {
       let songToPlay
       if (this.isShuffled)
-        songToPlay = this.playlistPlaying.songsShuffled.curr.song
-      else songToPlay = this.playlistPlaying.songs.curr.song
+        songToPlay = this.playlistPlaying.songListShuffled.curr.song
+      else songToPlay = this.playlistPlaying.songList.curr.song
       console.log('playSong curr track: ')
       console.log(songToPlay)
       console.log(songToPlay.id)
@@ -284,8 +294,10 @@ export default {
       // start fetching
       this.netease.fetchSong(songToPlay.id).then((songFetched) => {
         // fetched!
-        if(songFetched == undefined){
+        if (songFetched == undefined) {
           console.log('handle songFetched == undefined here! ')
+          // retry playing
+          return
         }
         console.log(`song url: ${songFetched.body.data[0].url}`)
         this.$store.commit('setSongPlayingUrl', {
