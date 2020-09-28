@@ -87,7 +87,7 @@ export default class netease {
     console.log('got song_detail')
     songsLoaded = songsLoaded.body
     // Load songs from playlist
-    console.log(songsLoaded)
+    // console.log(songsLoaded)
     return songsLoaded.songs
   }
 

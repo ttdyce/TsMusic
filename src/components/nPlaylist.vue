@@ -58,7 +58,7 @@ export default {
       playlistDetails: {},
     }
   },
-  created() {
+  async created() {
     this.fetchData()
   },
   watch: {
@@ -67,7 +67,8 @@ export default {
   },
   computed:{
     isLoaded(){
-      return JSON.stringify(this.playlistDetails) !== JSON.stringify({});
+      for(var i in this.playlistDetails) return true // playlistDetails is not empty
+      return false
     }
   }, 
   methods: {
@@ -95,7 +96,7 @@ export default {
       // console.log(songs)
 
       this.$store.commit('setSongsLoaded', songs)
-      console.log('end fetching');
+      console.log('end fetching' + Date());
     },
     playSong() {
       const song = this.$store.state.playlist.playing.songList.curr.song
