@@ -72,9 +72,9 @@
 </template>
 
 <script>
-import Player from "./components/Player";
+import Player from './components/Player'
 export default {
-  props: ['playlists'],
+  inject: ['netease'],
   components: {
     Player,
   },
@@ -95,9 +95,20 @@ export default {
       { title: 'Favorite', icon: 'mdi-heart', route: '/favorite' },
       { title: 'Recent', icon: 'mdi-history', route: '/recent' },
     ],
+    playlists: [], 
   }),
   created() {
-    
+    console.log('App.vue: netease.getUserPlaylist()')
+    this.netease
+      .getUserPlaylist()
+      .then((lists) => {
+        console.log('App.vue: netease.getUserPlaylist() entered')
+        console.log(lists)
+        this.playlists = lists[0].concat(lists[1])
+      })
+      .catch(function(reason) {
+        console.log(reason)
+      })
   },
 }
 </script>

@@ -7,7 +7,7 @@ import Home from './components/Home'
 import nPlaylist from './components/nPlaylist'
 import { SongList, SongNode } from './model/SongList'
 // var Mousetrap = require("mousetrap");
-const { remote, ipcRenderer } = require('electron')
+const { remote} = require('electron')
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -25,7 +25,7 @@ const netease = remote.getGlobal('netease')
 const electronStore = remote.getGlobal('electronStore')
 var app = App
 const volumeSaved = electronStore.get('volumeSaved', [100, 100])
-console.log(volumeSaved)
+// console.log(volumeSaved)
 
 const store = new Vuex.Store({
   state: {
@@ -100,11 +100,10 @@ const store = new Vuex.Store({
           state.playlist.playing.songListShuffled = new SongList(
             state.playlist.original.songs.shuffle()
           )
-          console.log(state.playlist.original.songs);
-          console.log('renewed state.playlist.playing.songListShuffled');
-          console.log(state.playlist.playing.songListShuffled);
+          console.log(state.playlist.original.songs)
+          console.log('renewed state.playlist.playing.songListShuffled')
+          console.log(state.playlist.playing.songListShuffled)
           // this.commit('nextTrack')
-
         }
       }
     },
@@ -160,28 +159,21 @@ const store = new Vuex.Store({
   },
 })
 
-ipcRenderer.on('playlistsLoaded', (event, lists) => {
-  // const vm =
-  new Vue({
-    router,
-    vuetify,
-    store,
-    render: (h) =>
-      h(app, {
-        props: {
-          playlists: lists,
-        },
-        ref: 'app',
-      }),
-    provide: function() {
-      return {
-        netease: netease,
-      }
-    },
-  }).$mount('#app')
+new Vue({
+  router,
+  vuetify,
+  store,
+  render: (h) =>
+    h(app, {
+      ref: 'app',
+    }),
+  provide: function() {
+    return {
+      netease: netease,
+    }
+  },
+}).$mount('#app')
 
-  // vm.$refs.app.playlists = lists
-})
 
 Array.prototype.shuffle = function() {
   let arr = this.slice()

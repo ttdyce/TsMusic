@@ -18,20 +18,20 @@ export default class netease {
       const status = await login_status({
         cookie: this.cookie,
       })
-      console.log(status)
-      console.log(
-        `Name: ${status.body.profile.nickname} (${status.body.profile.userId})`
-      )
+      // console.log(status)
+      // console.log(
+      //   `Name: ${status.body.profile.nickname} (${status.body.profile.userId})`
+      // )
 
       const userid = status.body.profile.userId
       const playlist = await user_playlist({
         uid: userid,
         cookie: this.cookie,
       })
-      console.log(playlist)
-      console.log(
-        `Printing playlist: ${playlist.body.playlist[1].name} (${playlist.body.playlist[1].id})`
-      )
+      // console.log(playlist)
+      // console.log(
+      //   `Printing playlist: ${playlist.body.playlist[1].name} (${playlist.body.playlist[1].id})`
+      // )
       // const playlistid = playlist.body.playlist[1].id
       // const playlistName = playlist.body.playlist[1].name
 
@@ -59,26 +59,30 @@ export default class netease {
       id: lid,
       cookie: this.cookie,
     })
-    console.log('loaded a playlist')
-    console.log(playlistDetails)
-    console.log(
-      `Printing first song id: ${playlistDetails.body.privileges[0].id}`
-    )
+    console.log("fetchPlaylist");
+    // console.log('loaded a playlist')
+    // console.log(playlistDetails)
+    // console.log(
+    //   `Printing first song id: ${playlistDetails.body.privileges[0].id}`
+    // )
     return playlistDetails.body
   }
 
   async fetchSongs(playlistDetails) {
-    // Get all song id as array
+      console.log('start netease fetchSongs');
+      // Get all song id as array
     const songids = []
     playlistDetails.privileges.forEach((x) => {
       songids.push(x.id)
     })
-    console.log(songids)
+    // console.log(songids)
+    console.log('await song_detail');
     // Get all song details by ids
     let songsLoaded = await song_detail({
       ids: songids.toString(),
       cookie: this.cookie,
     })
+    console.log('got song_detail');
     songsLoaded = songsLoaded.body
     // Load songs from playlist
     console.log(songsLoaded)

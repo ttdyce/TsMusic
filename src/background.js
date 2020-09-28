@@ -20,6 +20,11 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: false, standard: true } },
 ])
 
+// Fix may not console.log in aync
+process.on('unhandledRejection', (error) => {
+  console.error(error)
+})
+
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
