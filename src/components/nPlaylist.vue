@@ -71,30 +71,31 @@ export default {
     }
   }, 
   methods: {
-    fetchData() {
+    async fetchData() {
+      console.log('start fetching');
       // start fetching
       this.isLoading = true
       this.error = this.songs = null
       const fetchedId = this.id
 
-      this.netease
-        .fetchPlaylist(fetchedId)
-        .then((playlistDetails) => {
-          console.log('playlistDetails')
-          console.log(playlistDetails)
-          this.playlistDetails = playlistDetails
-          return this.netease.fetchSongs(playlistDetails)
-        })
-        .then((songs) => {
-          // fetched!
-          this.isLoading = false
-          this.error = false
-          this.songs = songs
-          console.log('songs')
-          console.log(songs)
+      const playlistDetails = await this.netease.fetchPlaylist(fetchedId)
+      console.log('playlistDetails')
+      console.log(playlistDetails)
+      this.playlistDetails = playlistDetails
+      
+      console.log('start songs' + Date())
+      const songs = await this.netease.fetchSongs(playlistDetails)
+      console.log('songs' + Date())
+      // console.log(songs)
+      // fetched!
+      this.isLoading = false
+      this.error = false
+      this.songs = songs
+      // console.log('songs')
+      // console.log(songs)
 
-          this.$store.commit('setSongsLoaded', songs)
-        })
+      this.$store.commit('setSongsLoaded', songs)
+      console.log('end fetching');
     },
     playSong() {
       const song = this.$store.state.playlist.playing.songList.curr.song

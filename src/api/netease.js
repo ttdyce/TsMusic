@@ -55,11 +55,13 @@ export default class netease {
   }
 
   async fetchPlaylist(lid) {
+    console.log('netease fetchPlaylist start')
+
     const playlistDetails = await playlist_detail({
       id: lid,
       cookie: this.cookie,
     })
-    console.log("fetchPlaylist");
+    console.log('fetchPlaylist')
     // console.log('loaded a playlist')
     // console.log(playlistDetails)
     // console.log(
@@ -69,20 +71,20 @@ export default class netease {
   }
 
   async fetchSongs(playlistDetails) {
-      console.log('start netease fetchSongs');
-      // Get all song id as array
+    console.log('start netease fetchSongs')
+    // Get all song id as array
     const songids = []
     playlistDetails.privileges.forEach((x) => {
       songids.push(x.id)
     })
     // console.log(songids)
-    console.log('await song_detail');
+    console.log('await song_detail')
     // Get all song details by ids
     let songsLoaded = await song_detail({
       ids: songids.toString(),
       cookie: this.cookie,
     })
-    console.log('got song_detail');
+    console.log('got song_detail')
     songsLoaded = songsLoaded.body
     // Load songs from playlist
     console.log(songsLoaded)
