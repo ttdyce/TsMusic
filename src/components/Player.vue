@@ -1,5 +1,15 @@
 <template>
   <div style="position:fixed; right:0;bottom:0;left:256px; height: 180px">
+    <v-snackbar v-model="snackbarSkip">
+      {{ snackbarTextSkip }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink" text v-bind="attrs" @click="snackbarSkip = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <v-progress-linear
       rounded
       indeterminate
@@ -151,6 +161,11 @@ export default {
       volume1: 100,
       volume2: 100,
       isShuffled: false,
+      timeRetried: 0,
+      maxRetry: 3,
+
+      snackbarSkip: false,
+      snackbarTextSkip: "Skipped unplayable song",
     }
   },
   computed: {
@@ -297,6 +312,14 @@ export default {
         if (songFetched == undefined) {
           console.log('handle songFetched == undefined here! ')
           // todo retry playing here
+          if (this.timeRetried < this.maxRetry) {
+            console.log(`retrying(${++this.timeRetried})...`)
+            this.playSong(false)
+          } else {
+            this.snackbarSkip = true
+            this.timeRetried = 0
+            this.playNextTrack()
+          }
           return
         }
         console.log(`song url: ${songFetched.body.data[0].url}`)
