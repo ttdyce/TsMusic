@@ -7,6 +7,7 @@
             <v-card>
               <v-skeleton-loader
                 max-height="20vh"
+                min-height="16vh"
                 type="image"
               ></v-skeleton-loader>
             </v-card>

@@ -23,6 +23,8 @@
             <v-col cols="12">
               <!-- image loaded -->
               <v-img
+                max-height="20vh"
+                min-height="16vh"
                 v-if="isSongDetailLoaded"
                 :src="songDetail.al.picUrl"
                 alt="oops, cannot load album thumbnail! "
