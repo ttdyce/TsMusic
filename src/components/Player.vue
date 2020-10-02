@@ -310,9 +310,9 @@ export default {
 
       // start fetching
       this.netease.fetchSong(songToPlay.id).then((songFetched) => {
-        // fetched!
-        if (songFetched == undefined) {
-          console.log('handle songFetched == undefined here! ')
+        // handle errors
+        if (songFetched == undefined || (songFetched != undefined && songFetched.body.data[0].url == null) ) { // fix url = null, id: 534540206
+          console.log('! songFetched == undefined / url == null here ')
           // todo retry playing here
           if (this.timeRetried < this.maxRetry) {
             console.log(`retrying(${++this.timeRetried})...`)
@@ -324,6 +324,8 @@ export default {
           }
           return
         }
+
+        // song is ok here
         console.log(`song url: ${songFetched.body.data[0].url}`)
         this.$store.commit('setSongPlayingUrl', {
           songUrl: songFetched.body.data[0],
