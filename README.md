@@ -1,24 +1,25 @@
-# tsmusic
+# ts-music
 
 This an vuetify-electron application for music playing.  
 It retrieve playlists from Netease Music and play songs with the player implemented in electron.  
 
-## Core concept
+## Core
 
-- nPlaylist / External playlist (from Netease Music API)
-  - playlist detail
-  - song detail
-  - song url
-- Track System
-  - currently-playing playlist
-    - prev: a computed value from history
-    - curr: SongNode
-    - next: SongNode
-  - play history
+- Fetch playlist from [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
+  - enable unblocking with forked one [ttdyce/NeteaseCloudMusicApi](https://github.com/ttdyce/NeteaseCloudMusicApi)
+- Play songs with HTML audio
   - dual volume control
-  - play mode
-- Home
-  - recently played playlists
-
+  - random play mode by Fisher–Yates shuffle
+- others (in-development)
+  - Searching
+  - A new home page
+  
 Learn more at the [Technical README](TechnicalREADME.md)
 
+## Development
+
+To run the project:  
+`yarn electron:serve`
+
+To build the project:  
+`vue-cli-service electron:build`
