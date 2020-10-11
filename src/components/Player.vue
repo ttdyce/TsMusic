@@ -1,5 +1,6 @@
 <template>
   <div style="position:fixed; right:0;bottom:0;left:256px; height: 180px">
+    <!-- Snackbar definition -->
     <v-snackbar v-model="snackbarSkip">
       {{ snackbarTextSkip }}
 
@@ -9,7 +10,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-
+    <!-- component interface -->
     <v-progress-linear
       rounded
       indeterminate
@@ -19,32 +20,7 @@
       <v-row>
         <!-- Lefty, thumbnail -->
         <v-col cols="2" class="px-0">
-          <v-row no-gutters>
-            <v-col cols="12">
-              <!-- image loaded -->
-              <v-img
-                max-height="20vh"
-                min-height="16vh"
-                v-if="isSongDetailLoaded"
-                :src="songDetail.al.picUrl"
-                alt="oops, cannot load album thumbnail! "
-              >
-                <template v-slot:placeholder>
-                  <!-- image loading -->
-                  <v-sheet
-                    :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-                  >
-                    <v-card>
-                      <v-skeleton-loader
-                        max-height="12vh"
-                        type="image"
-                      ></v-skeleton-loader>
-                    </v-card>
-                  </v-sheet>
-                </template>
-              </v-img>
-            </v-col>
-          </v-row>
+          <Thumbnail :src="thumbnailSrc"/>
         </v-col>
         <!-- Middle, 3 parts vertically: play/pause, progress, song detail -->
         <v-col cols="7">
@@ -149,8 +125,12 @@
 </template>
 
 <script>
+import Thumbnail from './Thumbnail'
 export default {
   inject: ['theme', 'netease'],
+  components: {
+    Thumbnail
+  }, 
   data() {
     return {
       nameLoaded: false,
@@ -199,6 +179,12 @@ export default {
       let color = this.isShuffled ? 'grey' : ''
       return `color: ${color} lighten-3`
     },
+    thumbnailSrc(){
+      if(this.isSongDetailLoaded)
+        return this.songDetail.al.picUrl
+      else
+        return ""
+    }, 
   },
   methods: {
     toMinuteString(time) {

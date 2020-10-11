@@ -2,16 +2,11 @@
   <div>
     <v-container class="grey lighten-5">
       <v-row>
+        <!-- playlist thumbnail -->
         <v-col cols="3" xs="4">
-          <v-sheet :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`">
-            <v-card>
-              <v-skeleton-loader
-                max-height="20vh"
-                min-height="16vh"
-                type="image"
-              ></v-skeleton-loader>
-            </v-card>
-          </v-sheet>
+
+          <Thumbnail :src="thumbnailSrc"/>
+
         </v-col>
         <v-col sm="6">
           <v-row no-gutters v-if="isLoaded">
@@ -49,7 +44,11 @@
 </template>
 
 <script>
+import Thumbnail from './Thumbnail'
 export default {
+  components: {
+    Thumbnail
+  }, 
   props: ['id'],
   data() {
     return {
@@ -57,6 +56,7 @@ export default {
       isError: null,
       songs: null,
       playlistDetails: {},
+      thumbnailSrc: ""
     }
   },
   async created() {
@@ -84,6 +84,7 @@ export default {
       console.log('playlistDetails')
       console.log(playlistDetails)
       this.playlistDetails = playlistDetails
+      this.thumbnailSrc = playlistDetails.playlist.coverImgUrl
       
       console.log('start songs' + Date())
       const songs = await this.netease.fetchSongs(playlistDetails)
