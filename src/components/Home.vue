@@ -1,35 +1,49 @@
 <template>
-  <div
-    class="red"
-  >
-    <v-container class="grey lighten-5">
-      <v-row>
-        <v-col sm="4">
-          <v-sheet :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`">
-            <v-card>
-              <v-skeleton-loader
-                max-height="20vh"
-                type="image"
-              ></v-skeleton-loader>
-            </v-card>
-          </v-sheet>
-        </v-col>
-        <v-col sm="6">
-          <v-row no-gutters>
-            <v-col> Home</v-col>
-          </v-row>
-          <v-row no-gutters>
-            <v-col> Playlistid {{ $route.params.id }} </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+	<div>
+		<v-container grey lighten-5>
+			<v-row>
+				<v-col cols="6">
+					<ClickableThumbnail
+						src="https://picsum.photos/510/300?random"
+						desc="Daily feed | {dateOfToday}"
+            :onClickThumbnail="() => $router.push('/playlist/recommend')"
+					/>
+				</v-col>
+				<v-col cols="6">
+					<ClickableThumbnail
+						src="https://picsum.photos/510/300?random"
+						desc="Heart beat"
+            :onClickThumbnail="() => $router.push('/playlist/intelligence')"
+					/>
+				</v-col>
+			</v-row>
+		</v-container>
+		<v-container py-0>
+			<v-row>
+				<v-col cols="3">
+					<ClickableThumbnail src="https://picsum.photos/510/300?random" />
+				</v-col>
+				<v-col cols="3">
+					<ClickableThumbnail src="https://picsum.photos/510/300?random" />
+				</v-col>
+				<v-col cols="3">
+					<ClickableThumbnail src="https://picsum.photos/510/300?random" />
+				</v-col>
+				<v-col cols="3">
+					<ClickableThumbnail src="https://picsum.photos/510/300?random" />
+				</v-col>
+			</v-row>
+		</v-container>
+	</div>
 </template>
 
 <script>
+import ClickableThumbnail from './ClickableThumbnail'
 export default {
-  // Vuetify
-  inject: ["theme"],
-};
+	// Vuetify
+	inject: ['theme'],
+	components: {
+		ClickableThumbnail,
+	},
+}
 </script>
