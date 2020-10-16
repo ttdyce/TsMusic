@@ -122,7 +122,9 @@ export default {
 				if (this.type == 'recommend')
 					this.songs = await this.netease.getRecommendSongs()
 				else if (this.type == 'intelligence') {
-				console.log('intelligence type')
+					this.songs = await this.netease.getIntelligenceList(446154096, 2558676587)
+					console.log(this.songs)
+					// this.songs = await this.netease.getRecommendSongs()
 				}
 
 				console.log(this.songs)

@@ -6,6 +6,7 @@ const {
 	song_url,
 	check_music,
 	recommend_songs,
+	playmode_intelligence_list, 
 } = require('NeteaseCloudMusicApi')
 // require("@nondanee/unblockneteasemusic");
 
@@ -15,12 +16,34 @@ export default class netease {
 		this.cookie = cookie
 	}
 
+	async getIntelligenceList(id, pid) {
+		const intelligenceList = await playmode_intelligence_list({
+			cookie: this.cookie,
+			id: id, 
+			pid: pid,
+		})
+
+		const ids = []
+		intelligenceList.body.data.forEach(item => {
+			ids.push(item.id)
+		});
+
+		let songsLoaded = await song_detail({
+			ids: ids.toString(),
+			cookie: this.cookie,
+		})
+
+		songsLoaded = songsLoaded.body.songs
+
+		return songsLoaded
+	}
+
 	async getRecommendSongs() {
 		const songsResponse = await recommend_songs({
 			cookie: this.cookie,
 		})
 
-    const songs = songsResponse.body.data.dailySongs
+		const songs = songsResponse.body.data.dailySongs
 		console.log('getRecommendSongs')
 		console.log(songs)
 		return songs
