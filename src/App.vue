@@ -1,5 +1,43 @@
 <template>
 	<v-app>
+		<v-dialog v-model="dialog" persistent max-width="600px">
+			<v-card>
+				<v-card-title>
+					<span class="headline">Login</span>
+				</v-card-title>
+				<v-card-text>
+					<v-container>
+						<v-row>
+							<v-col cols="12" sm="6" md="4">
+								<v-text-field
+									v-model="cookie"
+									label="Session cookie"
+									placeholder="MUSIC_U=10101010..."
+									required
+									:autofocus="dialog"
+								></v-text-field>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn color="blue darken-1" text @click="dialog = false">
+						Close
+					</v-btn>
+					<v-btn
+						color="blue darken-1"
+						text
+						@click="
+							setCookie(cookie)
+						"
+					>
+						Save
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
 		<v-navigation-drawer permanent app>
 			<v-list-item>
 				<v-list-item-content>
@@ -7,7 +45,7 @@
 						TSMusic
 					</v-list-item-title>
 					<v-list-item-subtitle>
-						unblocked, a better client
+						unblocked, for a better client
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
@@ -63,6 +101,7 @@
 				<!-- component matched by the route will render here -->
 				<router-view
 					style="position:fixed; top:0;left:256px;right:0;bottom:180px;overflow-y: auto;"
+					:playlists="playlists"
 				></router-view>
 			</v-container>
 		</v-main>
@@ -73,8 +112,9 @@
 
 <script>
 import Player from './components/Player'
+
 export default {
-	inject: ['netease'],
+	inject: ['netease', 'electronStore'],
 	components: {
 		Player,
 	},
@@ -88,27 +128,57 @@ export default {
 		goRoute(route) {
 			if (route != this.$route.path) this.$router.push(route)
 		},
+		setCookie(cookie) {
+			cookie = `MUSIC_U=${cookie.replace(/"|MUSIC_U=/g, '')}`
+
+			console.log(cookie)
+			this.electronStore.set('cookie', cookie)
+			this.netease.cookie = cookie
+
+			this.fetchPlaylist() 
+		},
+		fetchPlaylist() {
+			this.netease
+				.isLoginOk()
+				.then((ok) => {
+					console.log('ok? ' + ok)
+					if (!ok) {
+						this.dialog = true
+					}
+					this.dialog = false
+
+					this.netease
+						.getUserPlaylist()
+						.then((lists) => {
+							console.log(lists)
+							this.playlists = lists[0].concat(lists[1])
+						})
+						.catch(function(reason) {
+							console.log(reason)
+						})
+				})
+				.catch(function(reason) {
+					console.log(reason)
+				})
+		},
 	},
 	data: () => ({
 		navigationItems: [
 			{ title: 'Home', icon: 'mdi-home', route: '/' },
-			{ title: 'Favorite', icon: 'mdi-heart', route: '/favorite' },
-			{ title: 'Recent', icon: 'mdi-history', route: '/recent' },
+			{ title: 'Favorite', icon: 'mdi-heart', route: '/playlist/favorite' },
+			{ title: 'Recent', icon: 'mdi-history', route: '/playlist/recent' },
 		],
 		playlists: [],
+		cookie: '',
+		dialog: true,
 	}),
 	created() {
-		console.log('App.vue: netease.getUserPlaylist()')
-		this.netease
-			.getUserPlaylist()
-			.then((lists) => {
-				console.log('App.vue: netease.getUserPlaylist() entered')
-				console.log(lists)
-				this.playlists = lists[0].concat(lists[1])
-			})
-			.catch(function(reason) {
-				console.log(reason)
-			})
+		console.log('App: this.netease')
+		console.log(this.netease)
+		console.log('App.vue: await !this.netease.isLoginOk')
+		// console.log(await !this.netease.isLoginOk)
+
+		this.fetchPlaylist()
 	},
 }
 </script>

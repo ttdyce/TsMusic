@@ -1,12 +1,10 @@
 <template>
-	<span 
-	@click="onClickThumbnail()"
-	>
+	<span @click="onClickThumbnail()">
 		<p v-if="desc != undefined || desc != ''">
 			{{ desc }}
 		</p>
 		<p>
-			<Thumbnail src="https://picsum.photos/510/300?random" />
+			<Thumbnail :src="src" />
 		</p>
 	</span>
 </template>
@@ -25,6 +23,6 @@ export default {
 		// log(msg) {
 		// 	console.log(msg)
 		// },
-	}, 
+	},
 }
 </script>

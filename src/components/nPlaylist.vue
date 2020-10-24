@@ -73,7 +73,15 @@ export default {
 			isLoading: false,
 			isError: null,
 			songs: null,
-			playlistDetails: {},
+			playlistDetails: {
+				playlist: {
+					name: '',
+					trackCount: -1,
+					creator: {
+						nickname: '',
+					},
+				},
+			},
 			thumbnailSrc: '',
 		}
 	},
@@ -111,24 +119,35 @@ export default {
 				console.log('songs' + Date())
 				// console.log(songs)
 				// fetched!
-				this.isLoading = false
-				this.error = false
 				this.songs = songs
 				// console.log('songs')
 				// console.log(songs)
 			} else if (this.type != undefined) {
 				// fetch by type
 				console.log('do fetch by type')
-				if (this.type == 'recommend')
+				if (this.type == 'recommend') {
 					this.songs = await this.netease.getRecommendSongs()
-				else if (this.type == 'intelligence') {
-					this.songs = await this.netease.getIntelligenceList(446154096, 2558676587)
+
+					this.playlistDetails.playlist.name = 'Daily feed'
+					this.playlistDetails.playlist.creator.nickname = 'You! '
+					this.playlistDetails.playlist.trackCount = this.songs.length
+					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
+				} else if (this.type == 'intelligence') {
+					this.songs = await this.netease.getIntelligenceList(
+						446154096,
+						2558676587
+					)
 					console.log(this.songs)
-					// this.songs = await this.netease.getRecommendSongs()
+					this.playlistDetails.playlist.name = 'Heart beating...'
+					this.playlistDetails.playlist.creator.nickname = 'You! '
+					this.playlistDetails.playlist.trackCount = this.songs.length
+					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
 				}
 
 				console.log(this.songs)
 			}
+			this.isLoading = false
+			this.error = false
 
 			this.$store.commit('setSongsLoaded', this.songs)
 			console.log('end fetching' + Date())

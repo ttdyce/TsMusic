@@ -1,8 +1,8 @@
 'use strict'
 
-const Store = require('electron-store')
+// const Store = require('electron-store')
 import Netease from './api/netease'
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow  } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -11,9 +11,11 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
-// Netease music related
-const store = new Store()
-const netease = new Netease(store.get('cookie')) // being set before getting
+// Netease music
+const netease = new Netease() // being set before getting
+global.netease = netease
+
+console.log('main log');
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -52,13 +54,6 @@ function createWindow() {
     win = null
   })
 
-  win.webContents.on('did-finish-load', () => {
-    netease.getUserPlaylist().then((lists) => {
-      // console.log('netease.getUserPlaylist()');
-      // console.log(lists);
-      win.webContents.send('playlistsLoaded', lists[0].concat(lists[1]))
-    })
-  })
 }
 
 // Quit when all windows are closed.
@@ -107,6 +102,3 @@ if (isDevelopment) {
     })
   }
 }
-
-global.netease = netease
-global.electronStore = store

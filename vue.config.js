@@ -1,23 +1,32 @@
+var bundleAnalyzer = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
 module.exports = {
   transpileDependencies: ["vuetify"],
   configureWebpack: {
     devtool: 'source-map', 
     module: {
       rules: [
-        // todo testing if this fixes is needed, seems running fine 20200928
-        // { // fix webpack with NeteaseCloudMusicApi (in pac-proxy-agent) error
-        //   test: /node_modules[/\\](iconv-lite)[/\\].+/,
-        //   resolve: {
-        //     aliasFields: ["main"],
-        //   },
-        // },
+         // fix webpack with NeteaseCloudMusicApi (in pac-proxy-agent -> iconv-lite) error
+        {
+          test: /node_modules[/\\](iconv-lite)[/\\].+/,
+          resolve: {
+            aliasFields: ["main"],
+          },
+        },
       ],
     },
+    plugins: [
+      new bundleAnalyzer({
+        analyzerMode: "static",
+        reportFilename: "report.html",
+        openAnalyzer: false
+    })
+    ]
   },
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
-      mainProcessWatch: ['src/background.js']
+      mainProcessWatch: ['src/background.js', 'src/api/netease.js']
     },
   },
 };
