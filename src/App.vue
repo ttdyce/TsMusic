@@ -25,18 +25,14 @@
 					<v-btn color="blue darken-1" text @click="dialog = false">
 						Close
 					</v-btn>
-					<v-btn
-						color="blue darken-1"
-						text
-						@click="
-							setCookie(cookie)
-						"
-					>
+					<v-btn color="blue darken-1" text @click="setCookie(cookie)">
 						Save
 					</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
+		<Custom-v-system-bar></Custom-v-system-bar>
 
 		<v-navigation-drawer permanent app>
 			<v-list-item>
@@ -91,6 +87,20 @@
 					</v-list-item-content>
 				</v-list-item>
 			</v-list>
+
+			<template v-slot:append>
+				<v-container fluid>
+					<v-row>
+						<v-col cols="3">
+							Login
+						</v-col>
+						<v-col cols="6">
+							Settings
+						</v-col>
+					</v-row>
+				</v-container>
+			</template>
+
 		</v-navigation-drawer>
 
 		<!-- Sizes your content based upon application components -->
@@ -100,7 +110,7 @@
 				<!-- route outlet -->
 				<!-- component matched by the route will render here -->
 				<router-view
-					style="position:fixed; top:0;left:256px;right:0;bottom:180px;overflow-y: auto;"
+					style="position:fixed; top:28px;left:256px;right:0;bottom:180px;overflow-y: auto;"
 					:playlists="playlists"
 				></router-view>
 			</v-container>
@@ -112,11 +122,13 @@
 
 <script>
 import Player from './components/Player'
+import CustomVSystemBar from './components/CustomVSystemBar'
 
 export default {
 	inject: ['netease', 'electronStore'],
 	components: {
 		Player,
+		CustomVSystemBar, 
 	},
 	methods: {
 		goBack() {
@@ -135,7 +147,7 @@ export default {
 			this.electronStore.set('cookie', cookie)
 			this.netease.cookie = cookie
 
-			this.fetchPlaylist() 
+			this.fetchPlaylist()
 		},
 		fetchPlaylist() {
 			this.netease
