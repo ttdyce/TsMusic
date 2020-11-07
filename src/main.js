@@ -1,3 +1,4 @@
+// const customTitlebar = require('custom-electron-titlebar')
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
@@ -9,6 +10,10 @@ import { SongList, SongNode } from './model/SongList'
 import ElectronStore from 'electron-store'
 // var Mousetrap = require("mousetrap");
 const { remote } = require('electron')
+
+// new customTitlebar.Titlebar({
+// 	backgroundColor: customTitlebar.Color.fromHex('#444'),
+// })
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -28,7 +33,7 @@ const main = async () => {
 	})
 	const netease = remote.getGlobal('netease')
 	var app = App
-	const volumeSaved = electronStore.get('volumeSaved', [100, 100]) 
+	const volumeSaved = electronStore.get('volumeSaved', [100, 100])
 	// console.log(volumeSaved)
 
 	const store = new Vuex.Store({
@@ -45,11 +50,17 @@ const main = async () => {
 				playing: {
 					songList: new SongList([]),
 					songListShuffled: new SongList([]),
+					id: -1, 
 				},
 				history: [],
 				loaded: {
 					songs: [],
 				},
+				favorite: { 
+					// for /playlist/intelligence
+					id: -1, 
+					lid: -1, 
+				}, 
 			},
 			playMode: 'default',
 		},
@@ -71,13 +82,21 @@ const main = async () => {
 			setSongsLoaded(state, songs) {
 				state.playlist.loaded.songs = new SongList(songs)
 			},
-			setSongListPlaying(state, songs) {
+			setSongListFavorite(state, payload) {
+				console.log('setSongListFavorite...');
+				console.log(payload);
+				state.playlist.favorite.id = payload.id
+				state.playlist.favorite.lid = payload.lid
+			}, 
+			setSongListPlaying(state, payload) {
 				// clean history
 				this.commit('resetHistory')
-				this.commit('setSongsOriginal', songs)
+				this.commit('setSongsOriginal', payload.songs)
 
-				state.playlist.playing.songList = new SongList(songs)
-				state.playlist.playing.songListShuffled = new SongList(songs.shuffle())
+				state.playlist.playing.songList = new SongList(payload.songs)
+				state.playlist.playing.songListShuffled = new SongList(payload.songs.shuffle())
+				state.playlist.playing.id = payload.id
+				
 				console.log('Song linked list stored: ')
 				console.log(state.playlist.playing.songList)
 				console.log('shuffled songs: ')
@@ -175,8 +194,8 @@ const main = async () => {
 			}),
 		provide: function() {
 			return {
+				electronStore,
 				netease,
-				electronStore, 
 			}
 		},
 	}).$mount('#app')

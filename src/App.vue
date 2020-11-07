@@ -90,17 +90,19 @@
 
 			<template v-slot:append>
 				<v-container fluid>
-					<v-row>
-						<v-col cols="3">
+					<v-row justify="center">
+						<v-col cols="2">
 							Login
 						</v-col>
-						<v-col cols="6">
-							Settings
+						<v-col cols="2">
+							Login
+						</v-col>
+						<v-col cols="2">
+							Login
 						</v-col>
 					</v-row>
 				</v-container>
 			</template>
-
 		</v-navigation-drawer>
 
 		<!-- Sizes your content based upon application components -->
@@ -128,7 +130,7 @@ export default {
 	inject: ['netease', 'electronStore'],
 	components: {
 		Player,
-		CustomVSystemBar, 
+		CustomVSystemBar,
 	},
 	methods: {
 		goBack() {
@@ -161,9 +163,17 @@ export default {
 
 					this.netease
 						.getUserPlaylist()
-						.then((lists) => {
+						.then(async (lists) => {
 							console.log(lists)
 							this.playlists = lists[0].concat(lists[1])
+
+							const playlistBody = await this.netease.fetchPlaylist(
+								this.playlists[0].lid
+							)
+							this.$store.commit('setSongListFavorite', {
+								lid: this.playlists[0].lid,
+								id: playlistBody.playlist.tracks[0].id,
+							})
 						})
 						.catch(function(reason) {
 							console.log(reason)
@@ -177,7 +187,11 @@ export default {
 	data: () => ({
 		navigationItems: [
 			{ title: 'Home', icon: 'mdi-home', route: '/' },
-			{ title: 'Favorite', icon: 'mdi-heart', route: '/playlist/favorite' },
+			{
+				title: 'Heart-Beat Mode',
+				icon: 'mdi-heart',
+				route: '/playlist/intelligence',
+			},
 			{ title: 'Recent', icon: 'mdi-history', route: '/playlist/recent' },
 		],
 		playlists: [],

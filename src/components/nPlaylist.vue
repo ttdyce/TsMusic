@@ -133,10 +133,21 @@ export default {
 					this.playlistDetails.playlist.trackCount = this.songs.length
 					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
 				} else if (this.type == 'intelligence') {
-					this.songs = await this.netease.getIntelligenceList(
-						446154096,
-						2558676587
-					)
+					console.log([
+						this.$store.state.playlist.favorite.lid,
+						this.$store.state.playlist.favorite.id,
+					])
+					if (this.$store.state.songPlaying.detail.id == undefined) {
+						this.songs = await this.netease.getIntelligenceList(
+							this.$store.state.playlist.favorite.lid,
+							this.$store.state.playlist.favorite.id
+						)
+					} else {
+						this.songs = await this.netease.getIntelligenceList(
+							this.$store.state.songPlaying.detail.id,
+							this.$store.state.playlist.playing.id
+						)
+					}
 					console.log(this.songs)
 					this.playlistDetails.playlist.name = 'Heart beating...'
 					this.playlistDetails.playlist.creator.nickname = 'You! '
@@ -171,11 +182,17 @@ export default {
 			})
 		},
 		setPlaylist(incomingSongs) {
-			this.$store.commit('setSongListPlaying', incomingSongs)
+			this.$store.commit('setSongListPlaying', {
+				songs: incomingSongs,
+				id: this.id,
+			})
 		},
 		setPlaylistIfEmpty(incomingSongs) {
 			if (this.$store.getters.isPlayingPlaylistEmpty)
-				this.$store.commit('setSongListPlaying', incomingSongs)
+				this.$store.commit('setSongListPlaying', {
+					songs: incomingSongs,
+					id: this.id,
+				})
 		},
 		setTrackByid(song) {
 			console.log(
