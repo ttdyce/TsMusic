@@ -132,9 +132,9 @@ const main = async () => {
 			},
 			lastTrack(state) {
 				console.log('lastTrack entered')
-				let song = state.playlist.history.pop()
+				let song = state.playlist.history.shift()
 				if (song.id == state.songPlaying.detail.id)
-					song = state.playlist.history.pop()
+					song = state.playlist.history.shift()
 
 				const songNode = new SongNode(song)
 
@@ -147,13 +147,13 @@ const main = async () => {
 				}
 			},
 			pushToHistory(state, song) {
-				const top = state.playlist.history.pop()
+				const top = state.playlist.history.shift()
 				if (top != undefined) {
-					state.playlist.history.push(top)
+					state.playlist.history.unshift(top)
 					if (top.id == song.id) return
 				}
 
-				state.playlist.history.push(song)
+				state.playlist.history.unshift(song)
 				console.log('pushed to history: ')
 				console.log(state.playlist.history)
 			},
