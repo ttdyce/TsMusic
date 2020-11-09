@@ -6,7 +6,9 @@
 		v-if="src != ''"
 		:src="src"
 		alt="oops, cannot load album thumbnail! "
+		:class="classes"
 	>
+
 		<template v-slot:placeholder>
 			<!-- image loading -->
 			<v-sheet :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`">
@@ -22,6 +24,7 @@
 export default {
 	props: {
 		src: String,
+		classes: String,
 	},
 	inject: ['theme'],
 }

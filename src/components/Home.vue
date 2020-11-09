@@ -18,11 +18,7 @@
 					/>
 				</v-col>
 				<v-col cols="6">
-					<ClickableThumbnail
-						src="err"
-						desc="Heart beat"
-						:onClickThumbnail="() => $router.push('/playlist/intelligence')"
-					/>
+					<ClickableThumbnail src="err" :desc="`pending...`" />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -59,7 +55,7 @@ export default {
 	// Vuetify
 	inject: ['theme', 'netease'],
 	props: {
-		playlists: Array,
+		playlistsFromApp: Array,
 	},
 	components: {
 		ClickableThumbnail,
@@ -69,10 +65,12 @@ export default {
 			today: new Date(),
 			dailyFeedThumbnailData: '',
 			recommendedRow1: { id: 1, playlists: [] },
-			recommendedRow2: { id: 2, playlists: [] },
+			recommendedRow2: { id: 2, playlists: [-1, -1, -1, -1] },
 		}
 	},
 	mounted() {
+		this.fetchData()
+
 		// draw today feed thumbnail
 		const today = new Date()
 		const canvas = document.getElementById('myCanvas')
@@ -100,30 +98,23 @@ export default {
 
 		this.dailyFeedThumbnailData = canvas.toDataURL()
 	},
-	watch: {
-		// eslint-disable-next-line no-unused-vars
-		playlists: async function(newVal, _oldVal) {
-			//
-			this.playlists = newVal
-			const row1 = this.playlists.slice(1, 5)
 
+	watch: {
+		playlistsFromApp: 'fetchData',
+	},
+	methods: {
+		async fetchData() {
+			//
+			const row1 = this.playlistsFromApp.slice(1, 5)
+			console.log('Home playlist, playlistsFromApp: ')
+			console.log(this.playlistsFromApp)
+			console.log('row1')
 			console.log(row1)
 			for (let i = 0; i < row1.length; i++) {
 				const playlist = row1[i]
 				const playlistDetail = await this.netease.fetchPlaylist(playlist.lid)
 				this.recommendedRow1.playlists.push(playlistDetail.playlist)
 			}
-
-			// console.log(this.playlists)
-			// console.log(this.recommendedRow1);
-		},
-
-		// call again the method if the route changes
-		$route: 'log',
-	},
-	methods: {
-		log() {
-			console.log("changed")
 		},
 	},
 }

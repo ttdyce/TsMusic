@@ -1,12 +1,12 @@
 <template>
-	<span @click="onClickThumbnail()">
-		<p v-if="desc != undefined || desc != ''">
+	<div @click="onClickThumbnail()" class="grey lighten-3 clickable rounded">
+		<div v-if="desc != undefined || desc != ''">
 			{{ desc }}
-		</p>
-		<p>
-			<Thumbnail :src="src" />
-		</p>
-	</span>
+		</div>
+		<div>
+			<Thumbnail :src="src" classes="rounded-b"/>
+		</div>
+	</div>
 </template>
 
 <script>

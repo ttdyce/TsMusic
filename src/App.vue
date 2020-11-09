@@ -113,7 +113,7 @@
 				<!-- component matched by the route will render here -->
 				<router-view
 					style="position:fixed; top:28px;left:256px;right:0;bottom:180px;overflow-y: auto;"
-					:playlists="playlists"
+					:playlistsFromApp="playlists"
 				></router-view>
 			</v-container>
 		</v-main>
