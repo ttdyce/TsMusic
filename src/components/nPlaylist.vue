@@ -133,6 +133,7 @@ export default {
 					this.playlistDetails.playlist.trackCount = this.songs.length
 					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
 				} else if (this.type == 'intelligence') {
+					// 心動模式
 					console.log([
 						this.$store.state.playlist.favorite.lid,
 						this.$store.state.playlist.favorite.id,
@@ -153,6 +154,24 @@ export default {
 					this.playlistDetails.playlist.creator.nickname = 'You! '
 					this.playlistDetails.playlist.trackCount = this.songs.length
 					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
+				} else if (this.type == 'recent') {
+					console.log(this.$store.state.playlist.history);
+					this.songs = this.$store.state.playlist.history
+					
+					this.playlistDetails.playlist.name = 'Recent'
+					this.playlistDetails.playlist.creator.nickname = 'You from the past... '
+					this.playlistDetails.playlist.trackCount = this.songs.length
+					if(this.songs[0] != undefined)
+						this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
+				} else if(this.type == 'playing'){
+					console.log(this.$store.state.playlist.playing.songList);
+					this.songs = this.$store.state.playlist.playing.songList.toArray()
+					
+					this.playlistDetails.playlist.name = 'Playing'
+					this.playlistDetails.playlist.creator.nickname = 'You'
+					this.playlistDetails.playlist.trackCount = this.songs.length
+					if(this.songs[0] != undefined)
+						this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
 				}
 
 				console.log(this.songs)

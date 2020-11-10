@@ -102,7 +102,8 @@
               <v-btn icon large :class="colorShuffle" @click="toggleShuffle">
                 <v-icon>mdi-shuffle</v-icon>
               </v-btn>
-              <v-btn icon large>
+              <!-- todo playing playlist will be optimized in UX enhancement -->
+              <v-btn icon large @click="$router.push('/playlist/playing')">
                 <v-icon>mdi-playlist-music</v-icon>
               </v-btn>
             </v-col>

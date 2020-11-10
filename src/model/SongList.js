@@ -40,6 +40,18 @@ class SongList {
     newNode.next = this.curr
     this.curr = newNode
   }
+
+  toArray(){
+    const array = []
+    var cursor = this.curr
+
+    while(cursor != null){
+      array.push(cursor.song)
+      cursor = cursor.next
+    }
+
+    return array
+  }
 }
 
 class SongNode {
