@@ -137,12 +137,15 @@ const main = async () => {
 					song = state.playlist.history.shift()
 
 				const songNode = new SongNode(song)
+				const placeholderNode = new SongNode()
 
 				if (state.playMode == 'default') {
-					songNode.appendNext(state.playlist.playing.songList.curr)
+					placeholderNode.next = state.playlist.playing.songList.curr
+					placeholderNode.appendNext(songNode)
 					state.playlist.playing.songList.curr = songNode
 				} else if (state.playMode == 'random') {
-					songNode.appendNext(state.playlist.playing.songListShuffled.curr)
+					placeholderNode.next = state.playlist.playing.songListShuffled.curr
+					placeholderNode.appendNext(songNode)
 					state.playlist.playing.songListShuffled.curr = songNode
 				}
 			},
