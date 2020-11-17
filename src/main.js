@@ -48,6 +48,7 @@ const main = async () => {
 					songs: [],
 				},
 				playing: {
+					// data-driven control music player
 					songList: new SongList([]),
 					songListShuffled: new SongList([]),
 					id: -1, 
@@ -63,6 +64,11 @@ const main = async () => {
 				}, 
 			},
 			playMode: 'default',
+			// data-driven control music player
+			player: {
+				isPaused: true, 
+				// url: '' // not yet migrated
+			}, 
 		},
 		mutations: {
 			setSongPlayingUrl(state, payload) {
@@ -129,6 +135,8 @@ const main = async () => {
 						// this.commit('nextTrack')
 					}
 				}
+
+				this.commit('pushToHistory', state.songPlaying.detail)
 			},
 			lastTrack(state) {
 				console.log('lastTrack entered')
@@ -166,6 +174,12 @@ const main = async () => {
 			},
 			setPlayMode(state, newPlayMode) {
 				state.playMode = newPlayMode
+			},
+			togglePlay(state) {
+				this.commit('setPlayerIsPaused', !state.player.isPaused)
+			},
+			setPlayerIsPaused(state, isPaused) {
+				state.player.isPaused = isPaused
 			},
 		},
 		getters: {

@@ -23,8 +23,11 @@
 							<v-btn
 								@click="
 									isLoading = true
-									setPlaylist(songs)
-									playSong()
+									$store.commit('setPlayerIsPaused', true)
+									$store.commit('setSongListPlaying', {
+										songs,
+										id,
+									})
 								"
 								>Play all</v-btn
 							>
@@ -49,7 +52,6 @@
 								isLoading = true
 								setPlaylistIfEmpty(songs)
 								setTrackByid(song)
-								playSong()
 							"
 						>
 							{{ song.name }}
@@ -181,30 +183,6 @@ export default {
 
 			this.$store.commit('setSongsLoaded', this.songs)
 			console.log('end fetching' + Date())
-		},
-		playSong() {
-			const song = this.$store.state.playlist.playing.songList.curr.song
-
-			console.log('currTrack from getters: ')
-			console.log(song)
-			console.log(song.id)
-			this.$store.commit('setSongDetail', song)
-
-			// start fetching
-			this.netease.fetchSong(song.id).then((songFetched) => {
-				// fetched!
-				console.log(`song url: ${songFetched.body.data[0].url}`)
-				this.$store.commit('setSongPlayingUrl', {
-					songUrl: songFetched.body.data[0],
-				})
-				console.log(this.$store.state.songPlaying)
-			})
-		},
-		setPlaylist(incomingSongs) {
-			this.$store.commit('setSongListPlaying', {
-				songs: incomingSongs,
-				id: this.id,
-			})
 		},
 		setPlaylistIfEmpty(incomingSongs) {
 			if (this.$store.getters.isPlayingPlaylistEmpty)

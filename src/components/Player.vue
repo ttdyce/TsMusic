@@ -34,20 +34,20 @@
               @canplay="oncanplay()"
               @play="onplay()"
               @pause="onpause()"
-              @ended="playNextTrack()"
+              @ended="$store.commit('nextTrack')"
               :src="songPlaying.url.url"
               autoplay
             ></audio>
             <!-- play/pause thing -->
             <v-col cols="12" class="text-center">
-              <v-btn icon large @click="playPreviousTrack()">
+              <v-btn icon large @click="$store.commit('lastTrack')">
                 <v-icon>mdi-skip-previous</v-icon>
               </v-btn>
-              <v-btn icon large @click="togglePlay()">
+              <v-btn icon large @click="$store.commit('togglePlay')">
                 <v-icon v-if="!isPlaying">mdi-play</v-icon>
                 <v-icon v-else>mdi-pause</v-icon>
               </v-btn>
-              <v-btn icon large @click="playNextTrack()">
+              <v-btn icon large @click="$store.commit('nextTrack')">
                 <v-icon>mdi-skip-next</v-icon>
               </v-btn>
             </v-col>
@@ -149,6 +149,9 @@ export default {
 
       snackbarSkip: false,
       snackbarTextSkip: "Skipped unplayable song",
+
+      player: this.$store.state.player, 
+      playlistPlaying: this.$store.state.playlist.playing,
     }
   },
   computed: {
@@ -157,9 +160,6 @@ export default {
     },
     progressBar: function() {
       return this.$refs.progressBar
-    },
-    playlistPlaying: function() {
-      return this.$store.state.playlist.playing
     },
     songPlaying: function() {
       return this.$store.state.songPlaying
@@ -258,25 +258,12 @@ export default {
       const timeToSet = (this.progress / 100) * this.audio.duration
       this.audio.currentTime = timeToSet
     },
-    togglePlay() {
-      const isPaused = this.audio.paused
-      if (isPaused) {
-        this.audio.play()
-      } else {
-        this.audio.pause()
-      }
-    },
-    playPreviousTrack() {
-      this.$store.commit('lastTrack')
-
-      this.playSong(true)
-    },
     playNextTrack() {
       this.$store.commit('nextTrack')
 
-      this.playSong(false)
+      // this.playSong(false)
     },
-    playSong(fromHistory) {
+    playSong() {
       let songToPlay
       if (this.isShuffled)
         songToPlay = this.playlistPlaying.songListShuffled.curr.song
@@ -287,12 +274,12 @@ export default {
 
       console.log('this.songPlaying.detail')
       console.log(this.songPlaying.detail)
-      console.log('fromHistory')
-      console.log(fromHistory)
+      // console.log('fromHistory')
+      // console.log(fromHistory)
       console.log('this.songPlaying.detail')
       console.log(this.songPlaying.detail)
-      if (fromHistory != true)
-        this.$store.commit('pushToHistory', this.songPlaying.detail)
+      // if (fromHistory != true)
+      //   this.$store.commit('pushToHistory', this.songPlaying.detail)
       this.$store.commit('setSongDetail', songToPlay)
 
       // start fetching
@@ -303,11 +290,11 @@ export default {
           // todo retry playing here
           if (this.timeRetried < this.maxRetry) {
             console.log(`retrying(${++this.timeRetried})...`)
-            this.playSong(false)
+            this.playSong()
           } else {
             this.snackbarSkip = true
             this.timeRetried = 0
-            this.playNextTrack()
+            this.$store.commit('nextTrack')
           }
           return
         }
@@ -326,6 +313,28 @@ export default {
       this.$store.commit('setPlayMode', this.isShuffled ? 'random' : 'default')
     },
   },
+  watch:{
+    'player.isPaused'(isPaused) {
+      if(isPaused)
+        this.audio.play()
+      else 
+        this.audio.pause()
+    },
+    'player.src'(src) {
+      this.audio.src = src
+    },
+    // trigger play song
+    'playlistPlaying.songList'(songList) {
+      if(songList.length != 0)
+        this.playSong()
+    },
+    'playlistPlaying.songList.curr'() {
+      this.playSong()
+    },
+    'playlistPlaying.songListShuffled.curr'() {
+      this.playSong()
+    },
+  }, 
   mounted() {
     const volume1 = this.$store.state.volumeSaved[0]
     const volume2 = this.$store.state.volumeSaved[1]
