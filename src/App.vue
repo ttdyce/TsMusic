@@ -91,15 +91,23 @@
 			<template v-slot:append>
 				<v-container fluid>
 					<v-row justify="center">
-						<v-col cols="2">
-							Login
-						</v-col>
-						<v-col cols="2">
-							Login
-						</v-col>
-						<v-col cols="2">
-							Login
-						</v-col>
+						<!-- <v-avatar color="blue">
+							<img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
+							<span class="white--text headline">tt</span>
+						</v-avatar> -->
+						<v-btn
+							v-if="isLoginOk"
+							elevation="2"
+							@click="
+								setCookie('')
+								isLoginOk = false
+							"
+							>Logout</v-btn
+						>
+						<v-btn v-else elevation="2" @click="dialog = true">Login</v-btn>
+							<v-btn @click="$router.push('/settings')">
+								mid-settings
+							</v-btn>
 					</v-row>
 				</v-container>
 			</template>
@@ -142,24 +150,18 @@ export default {
 		goRoute(route) {
 			if (route != this.$route.path) this.$router.push(route)
 		},
-		setCookie(cookie) {
-			cookie = `MUSIC_U=${cookie.replace(/"|MUSIC_U=/g, '')}`
-
-			console.log(cookie)
-			this.electronStore.set('cookie', cookie)
-			this.netease.cookie = cookie
-
-			this.fetchPlaylist()
-		},
 		fetchPlaylist() {
+			const app = this
 			this.netease
 				.isLoginOk()
 				.then((ok) => {
 					console.log('ok? ' + ok)
 					if (!ok) {
 						this.dialog = true
+						this.isLoginOk = false
 					}
 					this.dialog = false
+					this.isLoginOk = true
 
 					this.netease
 						.getUserPlaylist()
@@ -181,7 +183,19 @@ export default {
 				})
 				.catch(function(reason) {
 					console.log(reason)
+					app.playlists = []
 				})
+		},
+		setCookie(cookie) {
+			// set cookie if not empty
+			this.cookie =
+				cookie == '' ? '' : `MUSIC_U=${cookie.replace(/"|MUSIC_U=/g, '')}`
+
+			console.log(`cookie set: '${this.cookie}'`)
+			this.electronStore.set('cookie', this.cookie)
+			this.netease.cookie = this.cookie
+
+			this.fetchPlaylist()
 		},
 	},
 	data: () => ({
@@ -197,6 +211,7 @@ export default {
 		playlists: [],
 		cookie: '',
 		dialog: true,
+		isLoginOk: false,
 	}),
 	created() {
 		console.log('App: this.netease')

@@ -110,6 +110,7 @@ export default {
 			console.log(this.playlistsFromApp)
 			console.log('row1')
 			console.log(row1)
+			this.recommendedRow1.playlists = []
 			for (let i = 0; i < row1.length; i++) {
 				const playlist = row1[i]
 				const playlistDetail = await this.netease.fetchPlaylist(playlist.lid)

@@ -320,9 +320,6 @@ export default {
       else 
         this.audio.pause()
     },
-    'player.src'(src) {
-      this.audio.src = src
-    },
     // trigger play song
     'playlistPlaying.songList'(songList) {
       if(songList.length != 0)
@@ -339,6 +336,7 @@ export default {
     const volume1 = this.$store.state.volumeSaved[0]
     const volume2 = this.$store.state.volumeSaved[1]
     this.setVolumes([volume1, volume2])
+    
   },
 }
 </script>
