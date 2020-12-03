@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Run Script: electron:serve",
+      "request": "launch",
+      "command": "yarn run electron:serve",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch and Debug",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/vue-cli-service",
+      "runtimeArgs": ["electron:serve"],
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "openOnFirstSessionStart",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Electron: Main",
+      "type": "node",
+      "request": "launch",
+      "protocol": "inspector",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+      },
+      "preLaunchTask": "electron-debug",
+      "args": ["--remote-debugging-port=9223", "./dist_electron"],
+      "outFiles": ["${workspaceFolder}/dist_electron/**/*.js"], 
+      "outputCapture": "std"
+    },
+    {
+      "name": "Electron: Renderer",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9223,
+      "urlFilter": "http://localhost:*",
+      "timeout": 120000,
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Electron: All",
+      "configurations": ["Electron: Main", "Electron: Renderer"]
+    }
+  ]
+}
