@@ -6,6 +6,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import Home from './components/Home'
 import nPlaylist from './components/nPlaylist'
+import Settings from './components/Settings'
 import { SongList, SongNode } from './model/SongList'
 import ElectronStore from 'electron-store'
 // var Mousetrap = require("mousetrap");
@@ -27,6 +28,7 @@ const main = async () => {
 		{ path: '/', component: Home },
 		{ path: '/playlist/id/:id', component: nPlaylist, props: true },
 		{ path: '/playlist/:type', component: nPlaylist, props: true },
+		{ path: '/settings', component: Settings},
 	]
 	const router = new VueRouter({
 		routes, // short for `routes: routes`

@@ -17,6 +17,7 @@
     "NeteaseCloudMusicApi": "https://github.com/ttdyce/NeteaseCloudMusicApi.git",
     "electron-store": "^6.0.0",
     "mousetrap": "^1.6.5",
+    "update-electron-app": "^2.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
     "vuetify": "^2.2.11",

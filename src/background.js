@@ -1,10 +1,10 @@
 'use strict'
 
-// const Store = require('electron-store')
 import Netease from './api/netease'
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+// require('update-electron-app')() // auto-update
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
