@@ -26,8 +26,7 @@ const main = async () => {
 	// Define routes
 	const routes = [
 		{ path: '/', component: Home },
-		{ path: '/playlist/id/:id', component: nPlaylist, props: true },
-		{ path: '/playlist/:type', component: nPlaylist, props: true },
+		{ path: '/playlist/id/:id', name: 'playlist', component: nPlaylist, props: true },
 		{ path: '/settings', component: Settings},
 	]
 	const router = new VueRouter({

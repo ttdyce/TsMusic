@@ -105,9 +105,9 @@
 							>Logout</v-btn
 						>
 						<v-btn v-else elevation="2" @click="dialog = true">Login</v-btn>
-							<v-btn @click="$router.push('/settings')">
-								mid-settings
-							</v-btn>
+						<v-btn @click="$router.push('/settings')">
+							mid-settings
+						</v-btn>
 					</v-row>
 				</v-container>
 			</template>
@@ -118,11 +118,14 @@
 			<!-- Provides the application the proper gutter -->
 			<v-container fluid>
 				<!-- route outlet -->
-				<!-- component matched by the route will render here -->
-				<router-view
-					style="position:fixed; top:28px;left:256px;right:0;bottom:180px;overflow-y: auto;"
-					:playlistsFromApp="playlists"
-				></router-view>
+				<v-scroll-x-reverse-transition mode="out-in">
+					<!-- component matched by the route will render here -->
+					<router-view
+						style="position:fixed; top:28px;left:256px;right:0;bottom:180px;overflow-y: auto;"
+						:playlistsFromApp="playlists"
+						:key="$route.params.id"
+					></router-view>
+				</v-scroll-x-reverse-transition>
 			</v-container>
 		</v-main>
 
@@ -204,9 +207,9 @@ export default {
 			{
 				title: 'Heart-Beat Mode',
 				icon: 'mdi-heart',
-				route: '/playlist/intelligence',
+				route: '/playlist/id/-1',
 			},
-			{ title: 'Recent', icon: 'mdi-history', route: '/playlist/recent' },
+			{ title: 'Recent', icon: 'mdi-history', route: '/playlist/id/-3' },
 		],
 		playlists: [],
 		cookie: '',

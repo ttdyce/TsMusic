@@ -11,10 +11,10 @@
 						height="200"
 						style="border:1px solid #d3d3d3;"
 					></canvas>
-					<ClickableThumbnail
+					<ClickableThumbnail 
 						:src="dailyFeedThumbnailData"
 						:desc="`Daily feed | ${today.getDate()}/${today.getMonth() + 1}`"
-						:onClickThumbnail="() => $router.push('/playlist/recommend')"
+						:onClickThumbnail="() => $router.push('/playlist/id/-2')"
 					/>
 				</v-col>
 				<v-col cols="6">

@@ -69,7 +69,7 @@ export default {
 	components: {
 		Thumbnail,
 	},
-	props: ['id', 'type'],
+	props: ['id'],
 	data() {
 		return {
 			isLoading: false,
@@ -99,12 +99,24 @@ export default {
 			for (var i in this.playlistDetails) return true // playlistDetails is not empty
 			return false
 		},
+		type() {
+			if(this.id >= 0)
+				return undefined
+
+			var playlistTypes = {}
+			playlistTypes[-1] = 'intelligence'
+			playlistTypes[-2] = 'recommend'
+			playlistTypes[-3] = 'recent'
+			playlistTypes[-4] = 'playing'
+			
+			return playlistTypes[this.id] // undefined if not found
+		}, 
 	},
 	methods: {
 		async fetchData() {
 			console.log('start fetching data...')
 			// start fetching
-			if (this.id != undefined) {
+			if (this.id >= 0) {
 				// fetch by id
 				this.isLoading = true
 				this.error = this.songs = null
