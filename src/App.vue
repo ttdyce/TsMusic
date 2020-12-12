@@ -118,14 +118,15 @@
 			<!-- Provides the application the proper gutter -->
 			<v-container fluid>
 				<!-- route outlet -->
-				<v-scroll-x-reverse-transition mode="out-in">
+				<!-- use a dynamic transition name -->
+				<transition :name="transitionName" mode="out-in">
 					<!-- component matched by the route will render here -->
 					<router-view
 						style="position:fixed; top:28px;left:256px;right:0;bottom:180px;overflow-y: auto;"
 						:playlistsFromApp="playlists"
 						:key="$route.params.id"
 					></router-view>
-				</v-scroll-x-reverse-transition>
+				</transition>
 			</v-container>
 		</v-main>
 
@@ -143,10 +144,33 @@ export default {
 		Player,
 		CustomVSystemBar,
 	},
-	methods: {
-		goBack() {
-			window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
+	watch: {
+		$route(to, from) {
+			// check depth
+			const toDepth = to.path.split('/').length
+			const fromDepth = from.path.split('/').length
+			this.transitionName =
+				toDepth < fromDepth
+					? 'scroll-x-transition'
+					: 'scroll-x-reverse-transition'
+
+			// check playlistid history
+			const fromid = from.params.id
+			const toid = to.params.id
+			if (fromid != undefined) {
+				const lastid = this.history.pop()
+
+				if (lastid == toid) {
+					this.transitionName = 'scroll-x-transition'
+				} else {
+					this.history.push(lastid)
+					this.history.push(fromid)
+				}
+
+			}
 		},
+	},
+	methods: {
 		goPlaylist(id) {
 			if (id != this.$route.params.id) this.$router.push(`/playlist/id/${id}`)
 		},
@@ -215,6 +239,8 @@ export default {
 		cookie: '',
 		dialog: true,
 		isLoginOk: false,
+		transitionName: 'scroll-x-reverse-transition',
+		history: [],
 	}),
 	created() {
 		console.log('App: this.netease')
