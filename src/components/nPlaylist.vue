@@ -36,30 +36,39 @@
 				</v-col>
 			</v-row>
 		</v-container>
-
-		<v-simple-table>
-			<template v-slot:default>
-				<thead>
-					<tr>
-						<th class="text-left">Name</th>
-						<!-- <th class="text-left">Calories</th> -->
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="song in songs" :key="song.id" :v-bind="song">
-						<td
-							@dblclick="
-								isLoading = true
-								setPlaylistIfEmpty(songs)
-								setTrackByid(song)
-							"
-						>
-							{{ song.name }}
+		<template>
+			<v-data-table
+				:headers="headers"
+				:items="items"
+				item-key="name"
+				class="elevation-1"
+				:search="search"
+				:items-per-page="50"
+			>
+				<template v-slot:top>
+					<v-text-field
+						v-model="search"
+						label="Search anything"
+						class="mx-4"
+					></v-text-field>
+				</template>
+				<template v-slot:item="{ item }">
+					<tr
+						@dblclick="
+							isLoading = true
+							setPlaylistIfEmpty(songs)
+							setTrackByid(item.originalData)
+						"
+					>
+						<td>
+							{{ item.name }}<br />
+							<a> {{ item.singers }} </a>
 						</td>
+						<td>{{ item.album }}</td>
 					</tr>
-				</tbody>
-			</template>
-		</v-simple-table>
+				</template>
+			</v-data-table>
+		</template>
 	</div>
 </template>
 
@@ -72,6 +81,7 @@ export default {
 	props: ['id'],
 	data() {
 		return {
+			search: '',
 			isLoading: false,
 			isError: null,
 			songs: null,
@@ -95,22 +105,48 @@ export default {
 		$route: 'fetchData',
 	},
 	computed: {
+		headers() {
+			return [
+				{ text: 'Name', value: 'name' },
+				{ text: 'Album', value: 'album' },
+			]
+		},
+		items() {
+			if (this.songs == null) return []
+			const arr = []
+			const toArNames = (ar) => {
+				let arNames = ''
+				ar.forEach((element, index) => {
+					arNames += index == 0 ? element.name : ' / ' + element.name
+				})
+				return arNames
+			}
+
+			this.songs.forEach((x) =>
+				arr.push({
+					name: x.name,
+					singers: toArNames(x.ar),
+					album: x.al.name,
+					originalData: x,
+				})
+			)
+			return arr
+		},
 		isLoaded() {
 			for (var i in this.playlistDetails) return true // playlistDetails is not empty
 			return false
 		},
 		type() {
-			if(this.id >= 0)
-				return undefined
+			if (this.id >= 0) return undefined
 
 			var playlistTypes = {}
 			playlistTypes[-1] = 'intelligence'
 			playlistTypes[-2] = 'recommend'
 			playlistTypes[-3] = 'recent'
 			playlistTypes[-4] = 'playing'
-			
+
 			return playlistTypes[this.id] // undefined if not found
-		}, 
+		},
 	},
 	methods: {
 		async fetchData() {
@@ -169,23 +205,28 @@ export default {
 					this.playlistDetails.playlist.trackCount = this.songs.length
 					this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
 				} else if (this.type == 'recent') {
-					console.log(this.$store.state.playlist.history);
+					console.log(this.$store.state.playlist.history)
 					this.songs = this.$store.state.playlist.history
-					
+
 					this.playlistDetails.playlist.name = 'Recent'
-					this.playlistDetails.playlist.creator.nickname = 'You from the past... '
+					this.playlistDetails.playlist.creator.nickname =
+						'You from the past... '
 					this.playlistDetails.playlist.trackCount = this.songs.length
-					if(this.songs[0] != undefined)
-						this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
-				} else if(this.type == 'playing'){
-					console.log(this.$store.state.playlist.playing.songList);
+					if (this.songs[0] != undefined)
+						this.thumbnailSrc = await this.netease.getThumbnail(
+							this.songs[0].id
+						)
+				} else if (this.type == 'playing') {
+					console.log(this.$store.state.playlist.playing.songList)
 					this.songs = this.$store.state.playlist.playing.songList.toArray()
-					
+
 					this.playlistDetails.playlist.name = 'Playing'
 					this.playlistDetails.playlist.creator.nickname = 'You'
 					this.playlistDetails.playlist.trackCount = this.songs.length
-					if(this.songs[0] != undefined)
-						this.thumbnailSrc = await this.netease.getThumbnail(this.songs[0].id)
+					if (this.songs[0] != undefined)
+						this.thumbnailSrc = await this.netease.getThumbnail(
+							this.songs[0].id
+						)
 				}
 
 				console.log(this.songs)
