@@ -1,42 +1,36 @@
 # Ts-Music
 
-A streaming music player, hopefully for multi-platform. 
+A streaming music player, built for Windows.   
 
 > Enjoy the moment...
 
-(some screenshots)
-
-(download badges? picture wanted)
-
-**Sponsors**
-
-/ 
+> --- screenshots will be added ---
 
 ## Features
 
 Supported platform
 
 - [x] Netease Music
-- [ ] YouTube (Planned)
+- [ ] YouTube (Planned, in the long long term)
 
 - User
   - Loading stored playlist
   - Loading platform-recommended playlist
-
-- Platform
-  - Searching
-  - Unblock region limitation (Netease music)
 
 - Player
   - Playing tracks
   - Dual volume control
   - Shortcuts
 
+- Platform specific (Planned only)
+  - Searching
+  - Unblock region limitation (Netease music)
+
 Learn more about the technical part [here (Technical README)](TechnicalREADME.md)
 
 ---
 
-## Roadmap
+## Roadmap (Paused development)
 
 | Status         | Title                        | Rollout version               |
 | :------------- | ---------------------------- | ----------------------------- |
@@ -77,19 +71,15 @@ Or the command-line-way...🙄
 
 For the versions available, see the [tags on this repository](https://github.com/ttdyce/TsMusic/tags)
 
-## Authors
+## Author
 
-- **ttdyce** - *Initial work and maintenance* - [github](https://github.com/ttdyce)
+- **ttdyce** - [github](https://github.com/ttdyce)
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/ttdyce/TsMusic/blob/master/LICENSE.md) file for details
 
 ## Acknowledgment
-
-Contributors
-
-/ 
 
 Dependencies
 
