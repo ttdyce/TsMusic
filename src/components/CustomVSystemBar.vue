@@ -36,7 +36,8 @@
 		</div> -->
 
 		<v-spacer></v-spacer>
-		<div class="window-controls-container">
+		<!-- commented on Mac, todo 20220125 detect os platform, show windows key on windows only -->
+		<!-- <div class="window-controls-container"> 
 			<div class="window-icon-bg">
 				<div class="window-icon window-minimize" @click="minimize()"></div>
 			</div>
@@ -55,7 +56,7 @@
 					<div class="window-icon window-close"></div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</v-system-bar>
 </template>
 
